@@ -6,8 +6,7 @@
 <img src="jacket.png" alt="img" width="450"><br />
 <img src="skins3.png" alt="img" width="450"><br />
 <img src="villager-nose.png" alt="img" width="225">
-<img src="custom-cape.png" alt="img" width="146">
-<img src="cape-example.png" alt="img" width="185">
+
 
  </div>
  
