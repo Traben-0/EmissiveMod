@@ -36,6 +36,7 @@ public abstract class MixinPlayerSkinTexture {
 
     @Inject(method = "processLegacySkin",
             cancellable = true,
+            require = 0, //minecraft china will crash with this due to one of their inbuilt mods "netease_official-studio-1.20.jar"
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/HttpTexture;setNoAlpha(Lcom/mojang/blaze3d/platform/NativeImage;IIII)V"
                     , shift = At.Shift.BEFORE, ordinal = 0))
     private void etf$differentAlpha(final NativeImage image, final CallbackInfoReturnable<NativeImage> cir) {
