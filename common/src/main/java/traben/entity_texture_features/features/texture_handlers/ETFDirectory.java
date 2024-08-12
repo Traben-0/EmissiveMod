@@ -47,36 +47,26 @@ public enum ETFDirectory {
     @NotNull
     public static ETFDirectory getDirectoryOf(@NotNull ResourceLocation vanillaIdentifier) {
         Object2ReferenceOpenHashMap<@NotNull ResourceLocation, @NotNull ETFDirectory> cache = getCache();
-        if (!cache.containsKey(vanillaIdentifier)) {
-            cache.put(vanillaIdentifier, findDirectoryOf(vanillaIdentifier));
-        }
-        return cache.get(vanillaIdentifier);
+        return cache.computeIfAbsent(vanillaIdentifier, ETFDirectory::findDirectoryOf);
     }
 
     @NotNull
     private static ETFDirectory findDirectoryOf(ResourceLocation vanillaIdentifier) {
         //check already directory'd textures
-        if (vanillaIdentifier.getPath().contains("etf/random/entity")) {
-            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(vanillaIdentifier);
-            if (resource.isPresent()) {
-                return ETF;
-            }
-        } else if (vanillaIdentifier.getPath().contains("optifine/random/entity")) {
-            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(vanillaIdentifier);
-            if (resource.isPresent()) {
-                return OPTIFINE;
-            }
-        } else if (vanillaIdentifier.getPath().contains("optifine/mob")) {
-            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(vanillaIdentifier);
-            if (resource.isPresent()) {
-                return OLD_OPTIFINE;
-            }
+        String path = vanillaIdentifier.getPath();
+        ResourceManager resources = Minecraft.getInstance().getResourceManager();
+
+        if (path.contains("etf/random/entity") && resources.getResource(vanillaIdentifier).isPresent()) {
+            return ETF;
+        } else if (path.contains("optifine/random/entity") && resources.getResource(vanillaIdentifier).isPresent()) {
+            return OPTIFINE;
+        } else if (path.contains("optifine/mob") && resources.getResource(vanillaIdentifier).isPresent()) {
+            return OLD_OPTIFINE;
         }
 
         //it is not cached and does not need to be
         //may either be properties or image
         ObjectArrayList<ETFDirectory> foundDirectories = new ObjectArrayList<>();
-        ResourceManager resources = Minecraft.getInstance().getResourceManager();
 
         if (resources.getResource(getIdentifierAsDirectory(vanillaIdentifier, VANILLA)).isPresent())
             foundDirectories.add(VANILLA);
@@ -100,18 +90,12 @@ public enum ETFDirectory {
             for (ETFDirectory directory :
                     foundDirectories) {
                 //map result already has internal 0123 order of pack directories ironed out only need to check pack order
-                Optional<Resource> resource = resources.getResource(getIdentifierAsDirectory(vanillaIdentifier, directory));
-                resource.ifPresent(value -> resourcePackNames.put(value.sourcePackId(), directory));
+                resources.getResource(getIdentifierAsDirectory(vanillaIdentifier, directory))
+                        .ifPresent(value -> resourcePackNames.put(value.sourcePackId(), directory));
             }
 
-            String[] strArray = resourcePackNames.keySet().toArray(new String[0]);
-            String returnedPack = ETFUtils2.returnNameOfHighestPackFromTheseMultiple(strArray);
-            if (returnedPack != null) {
-                return resourcePackNames.get(returnedPack);
-            } else {
-                //should exist
-                return VANILLA;
-            }
+            String returnedPack = ETFUtils2.returnNameOfHighestPackFromTheseMultiple(resourcePackNames.keySet().toArray(new String[0]));
+            return returnedPack != null ? resourcePackNames.get(returnedPack) : VANILLA;
         }
     }
 

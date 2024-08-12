@@ -73,32 +73,9 @@ public class ETFArmorHandler {
             ResourceLocation trimMaterialIdentifier = ETFUtils2.res(trimBaseId.getNamespace(), "textures/" + trimBaseId.getPath() + ".png");
             trimTexture = ETFManager.getInstance().getETFTextureNoVariation(trimMaterialIdentifier);
 
-            //if it is emmissive we need to create an identifier of the trim to render separately in iris
-//todo            if (!trimTexture.exists()
-//                    && ETF.config().getConfig().canDoEmissiveTextures()
-//                    && trimTexture.isEmissive()
-//                    && ETF.IRIS_DETECTED) {
-//                trimTexture.buildTrimTexture(trim, leggings);
-//            }
         }
     }
 
-    public VertexConsumer modifyTrim(VertexConsumer par2) {
-        //allow a specified override trim texture if you dont want to be confined by a pallette
-//todo        if(trimTexture!= null
-//                && par2 instanceof ETFVertexConsumer etfVertexConsumer
-//                && etfVertexConsumer.etf$getProvider() != null){
-//            if(trimTexture.exists()){
-//                return Objects.requireNonNull(etfVertexConsumer.etf$getProvider()).getBuffer(RenderType.armorCutoutNoCull(trimTexture.getTextureIdentifier(null)));
-//            }else if (trimTexture.isEmissive() && ETF.config().getConfig().canDoEmissiveTextures() && ETF.IRIS_DETECTED){
-//                //iris is weird and will always render the armor trim atlas over everything else
-//                // if for some reason no trim texture is present then just dont render it at all
-//                // this is to favour packs with fully emissive trims :/
-//                return Objects.requireNonNull(etfVertexConsumer.etf$getProvider()).getBuffer(RenderType.armorCutoutNoCull(ETFManager.getErrorETFTexture().thisIdentifier));
-//            }
-//        }
-        return par2;
-    }
 
     public void renderTrimEmissive(final PoseStack matrices, final MultiBufferSource vertexConsumers, final Model model) {
         if(trimTexture != null && ETF.config().getConfig().canDoEmissiveTextures()){

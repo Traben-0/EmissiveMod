@@ -76,7 +76,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
         return null;
     }
 
-    public static List<RandomPropertyRule> getAllValidPropertyObjects(Properties properties, ResourceLocation propertiesFilePath, String... suffixToTest) {
+    public static List<RandomPropertyRule> getAllValidPropertyObjects(Properties properties, ResourceLocation propertiesFilePath, String... suffixToTest) throws Exception {
         Set<String> propIds = properties.stringPropertyNames();
         //set so only 1 of each
         List<Integer> numbersList = getCaseNumbers(propIds);
@@ -88,7 +88,6 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
             //loops through each known number in properties
             //all rule.1 ect should be processed here
             Integer[] suffixesOfRule = getSuffixes(properties, ruleNumber, suffixToTest);
-
 
             //list easier to build
             if (suffixesOfRule != null && suffixesOfRule.length != 0) {
@@ -130,8 +129,18 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
     }
 
     @Nullable
-    private static Integer[] getSuffixes(Properties props, int num, String... suffixToTest) {
-        return SimpleIntegerArrayProperty.getGenericIntegerSplitWithRanges(props, num, suffixToTest);
+    private static Integer[] getSuffixes(Properties props, int num, String... suffixToTest) throws Exception {
+        var suffixes = SimpleIntegerArrayProperty.getGenericIntegerSplitWithRanges(props, num, suffixToTest);
+        //throw if it contains 0 or negatives
+        if (suffixes != null) {
+            for (Integer suffix :
+                    suffixes) {
+                if (suffix < 1) {
+                    throw new Exception("Invalid suffix: [" + suffix + "] in " + Arrays.toString(suffixes));
+                }
+            }
+        }
+        return suffixes;
     }
 
     @Nullable

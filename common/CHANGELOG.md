@@ -1,5 +1,13 @@
 [**ETF Changelog:**]
 
+
+- changed gui icon
+- added checks to ensure random property suffixes are always valid integers above 0
+
+[6.1.4]
+- fixed crash with minecraft china edition
+
+
 [6.1.3]
 - added additional null checks to fix some odd mod crashes
 - fixed the config breaking with some mods

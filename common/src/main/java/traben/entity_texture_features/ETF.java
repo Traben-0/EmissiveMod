@@ -29,18 +29,13 @@ import java.util.Set;
 public class ETF {
 
     public static final String MOD_ID = "entity_texture_features";
-    //logging object
     public final static Logger LOGGER = LoggerFactory.getLogger("Entity Texture Features");
     public static final int EMISSIVE_FEATURE_LIGHT_VALUE = LightTexture.FULL_BRIGHT + 2;
     public static TConfigHandler<ETFConfigScreenWarnings.WarningConfig> warningConfigHandler = null;
     public static boolean IRIS_DETECTED = false;
-
-
     public static boolean SKIN_LAYERS_DETECTED = false;
     public static Set<TConfigHandler<?>> configHandlers = null;
     private static TConfigHandler<ETFConfig> CONFIG = null;
-    //the below methods are used to handle version differences between forge and fabric
-
 
     public static TConfigHandler<ETFConfig> config() {
         if (CONFIG == null) {
@@ -50,8 +45,6 @@ public class ETF {
     }
 
     public static void start() {
-
-
         //set true config and load from file
         CONFIG = new TConfigHandler<>(ETFConfig::new, MOD_ID, "ETF");
         registerConfigHandler(CONFIG);
@@ -60,12 +53,7 @@ public class ETF {
         SKIN_LAYERS_DETECTED = isThisModLoaded("skinlayers3d");
         IRIS_DETECTED = isThisModLoaded("iris") || isThisModLoaded("oculus");
 
-
         LOGGER.info("Loading Entity Texture Features, " + randomQuip());
-
-        //initialise ETF with config settings
-//        ETFManager.resetInstance();
-
 
         warningConfigHandler = new TConfigHandler<>(ETFConfigScreenWarnings.WarningConfig::new, "etf_warnings.json", "ETF");
         registerConfigHandler(warningConfigHandler);
@@ -116,13 +104,7 @@ public class ETF {
     }
 
     private static String randomQuip() {
-        String[] quips = getQuips();
-        int rand = new Random().nextInt(quips.length);
-        return quips[rand];
-    }
-
-    private static String[] getQuips() {
-        return new String[]{
+        String[] quips = new String[]{
                 "also try EMF!",
                 "also known as ETF!",
                 "not to be confused with CIT, seriously, why does that keep happening?",
@@ -148,6 +130,8 @@ public class ETF {
                 "Paranormal ResourcePacktivity.",
                 "Has Anyone Really Been Far Even as Decided to Use Even Go Want to do Look More Like?"
         };
+        int rand = new Random().nextInt(quips.length);
+        return quips[rand];
     }
 
     public static void registerConfigHandler(TConfigHandler<?> configHandler) {
@@ -175,7 +159,6 @@ public class ETF {
         return ETFVersionDifferenceManager.modsLoaded();
     }
 
-
     @SuppressWarnings("unused")
     public static boolean isForge() {
         return ETFVersionDifferenceManager.isForge();
@@ -194,11 +177,8 @@ public class ETF {
         return world.getBiome(pos).unwrapKey().toString().split(" / ")[1].replaceAll("[^\\da-zA-Z_:-]", "");
     }
 
-
     @NotNull
     public static Component getTextFromTranslation(@Translatable(foldMethod = true) String translationKey) {
         return Component.translatable(translationKey);
     }
-
-
 }

@@ -88,17 +88,17 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extend
         etf$armorHandler.setTrim(armorMaterial,trim,leggings);
     }
 
-    @ModifyArg(method = "renderTrim",
-            at = @At(value = "INVOKE",
-                    #if MC < MC_21
-                    target = "Lnet/minecraft/client/model/HumanoidModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"),
-                    #else
-                    target = "Lnet/minecraft/client/model/HumanoidModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"),
-                    #endif
-            index = 1)
-    private VertexConsumer etf$changeTrim(VertexConsumer par2) {
-        return etf$armorHandler.modifyTrim(par2);
-    }
+//    @ModifyArg(method = "renderTrim",
+//            at = @At(value = "INVOKE",
+//                    #if MC < MC_21
+//                    target = "Lnet/minecraft/client/model/HumanoidModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"),
+//                    #else
+//                    target = "Lnet/minecraft/client/model/HumanoidModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"),
+//                    #endif
+//            index = 1)
+//    private VertexConsumer etf$changeTrim(VertexConsumer par2) {
+//        return etf$armorHandler.modifyTrim(par2);
+//    }
 
     @Inject(method = "renderTrim",
             at = @At(value = "TAIL"))
