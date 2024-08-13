@@ -34,11 +34,11 @@ public class TConfigEntryText extends TConfigEntry {
     }
 
     public static List<TConfigEntry> fromLongOrMultilineTranslation(@Translatable String translationKey, int width, TextAlignment alignment) {
-
         var translated = ETF.getTextFromTranslation(translationKey);
         var lines = Minecraft.getInstance().font.getSplitter().splitLines(translated, width, Style.EMPTY);
         List<TConfigEntry> list = new ArrayList<>();
         String lastLine = null;
+
         for (FormattedText line : lines) {
             if (lastLine != null) {
                 list.add(new TwoLines(lastLine, line.getString(), alignment));

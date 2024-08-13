@@ -15,7 +15,6 @@ import traben.entity_texture_features.ETF;
 public class TConfigScreen extends Screen {
     private final boolean showBackButton;
     protected Screen parent;
-
     protected Runnable resetDefaultValuesRunnable = null;
     protected Runnable undoChangesRunnable = null;
 

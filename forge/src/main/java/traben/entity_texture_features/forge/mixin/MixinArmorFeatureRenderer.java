@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 #if MC < MC_20_6
 //todo maybe more versions.....
@@ -68,9 +69,9 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, A extend
         return etf$armorHandler.getBaseTexture(texture);
     }
     #if MC >= MC_21
-    @ModifyArg(method = "renderModel(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/Model;ILnet/minecraft/resources/ResourceLocation;)V",
-            at = @At(value = "TAIL"))
-    private void etf$applyEmissive(final PoseStack arg, final MultiBufferSource arg2, final int i, final Model model, final float f, final float g, final float h, final ResourceLocation arg4, final CallbackInfo ci) {
+    @Inject(method = "renderModel(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/Model;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "TAIL"),remap = false)
+    private void etf$applyEmissive(final PoseStack arg, final MultiBufferSource arg2, final int i, final Model model, final int k, final ResourceLocation arg4, final CallbackInfo ci) {
 
 #elif MC >= MC_20_6
     @Inject(method = "renderModel(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/Model;FFFLnet/minecraft/resources/ResourceLocation;)V",
@@ -83,7 +84,7 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, A extend
     private void etf$applyEmissive(final PoseStack arg, final MultiBufferSource arg2, final int i, final ArmorItem arg3, final A model, final boolean bl, final float f, final float g, final float h, final String string, final CallbackInfo ci) {
 
 #endif
-        etf$armorHandler.renderBaseEmissive(arg,arg2,model,f,g,h);
+        etf$armorHandler.renderBaseEmissive(arg,arg2,model, #if MC < MC_21 f, g, h #else FastColor.ARGB32.red(k),FastColor.ARGB32.green(k), FastColor.ARGB32.blue(k) #endif);
 
     }
 
