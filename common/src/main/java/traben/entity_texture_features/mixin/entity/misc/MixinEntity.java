@@ -1,5 +1,6 @@
 package traben.entity_texture_features.mixin.entity.misc;
 
+import net.minecraft.advancements.critereon.NbtPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import traben.entity_texture_features.features.ETFRenderContext;
 import traben.entity_texture_features.utils.ETFEntity;
 
 import java.util.UUID;
@@ -110,13 +112,15 @@ public abstract class MixinEntity implements ETFEntity {
     }
 
     @Override
-    public CompoundTag etf$writeNbt(CompoundTag compound) {
-        //try include id
-        if (saveAsPassenger(compound)) {
-            return compound;
-        }
-        //else
-        return saveWithoutId(compound);
+    public CompoundTag etf$getNbt() {
+        return ETFRenderContext.cacheEntityNBTForFrame(etf$getUuid(),
+                ()->NbtPredicate.getEntityTagToCompare(((Entity)((Object)this))));
+//        //try include id
+//        if (saveAsPassenger(comp)) {
+//            return comp;
+//        }
+//        //else
+//        return saveWithoutId(comp);
     }
 
     @Override

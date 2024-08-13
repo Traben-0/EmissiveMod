@@ -80,7 +80,8 @@ public abstract class SimpleIntegerArrayProperty extends RandomProperty {
                 return new IntRange(single, single);
             }
         } catch (Exception e) {
-            return new IntRange(0, 0);
+            ETFUtils2.logError("Error parsing range: " + rawRange);
+            return new IntRange(Integer.MIN_VALUE, Integer.MIN_VALUE);
         }
     }
 

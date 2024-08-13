@@ -28,6 +28,14 @@ configurations {
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
+
+
+}
+
+if(rootProject.mc_build as int > 5){
+    configurations.configureEach {
+        resolutionStrategy.force("net.sf.jopt-simple:jopt-simple:5.0.4")
+    }
 }
 
 dependencies {

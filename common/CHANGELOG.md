@@ -4,6 +4,10 @@
 - changed gui icon
 - added checks to ensure random property suffixes are always valid integers above 0
 - fixed crash when rendering entity nameplates and having renderlayer overrides affect entity shadows
+- reworked and improved the `nbt` property to improve both performance and log printing functionality
+  - if your nbt test starts with `print_all:` the entire entity client-side nbt will be printed with nice formatting
+  - if your nbt test starts with `print:` that specific nbt value will be printed every time it tests
+  - (these both go before tests like `raw:` or `range:`)
 
 [6.1.4]
 - fixed crash with minecraft china edition

@@ -202,7 +202,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
                     break;
                 }
             }
-            if (entityCanUpdate.getBoolean(entityToBeTested.etf$getUuid())) {
+            if (entityCanUpdate.getBoolean(id)) {
                 for (RandomPropertyRule rule : propertyRules) {
                     //cache entity spawns
                     rule.cacheEntityInitialResultsOfNonUpdatingProperties(entityToBeTested);

@@ -34,7 +34,7 @@ public interface ETFEntity {
 
     int etf$getBlockY();
 
-    CompoundTag etf$writeNbt(CompoundTag compound);
+    CompoundTag etf$getNbt();
 
     boolean etf$hasCustomName();
 

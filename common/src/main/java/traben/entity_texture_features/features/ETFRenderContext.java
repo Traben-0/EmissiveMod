@@ -1,5 +1,6 @@
 package traben.entity_texture_features.features;
 
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.ETF;
 import traben.entity_texture_features.config.ETFConfig;
@@ -9,6 +10,8 @@ import traben.entity_texture_features.utils.ETFVertexConsumer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Supplier;
 
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -18,20 +21,27 @@ public class ETFRenderContext {
 
 
     public static boolean renderingFeatures = false;
-
     private static boolean allowRenderLayerTextureModify = true;
     private static boolean limitModifyToProperties = false;
     private static ETFEntity currentEntity = null;
     private static int currentModelPartDepth = 0;
-
-
     private static boolean isInSpecialRenderOverlayPhase = false;
     private static boolean allowedToPatch = false;
+
+    public static CompoundTag cacheEntityNBTForFrame(UUID entityUUID, Supplier<CompoundTag> computeNBT) {
+        if(currentEntityNBT == null || !entityUUID.equals(entityNBT_UUID)){
+            currentEntityNBT = computeNBT.get();
+            entityNBT_UUID = entityUUID;
+        }
+        return currentEntityNBT;
+    }
+
+    private static CompoundTag currentEntityNBT = null;
+    private static UUID entityNBT_UUID = null;
 
     public static boolean isRenderingFeatures() {
         return renderingFeatures;
     }
-
     public static void setRenderingFeatures(boolean renderingFeatures) {
         ETFRenderContext.renderingFeatures = renderingFeatures;
     }
@@ -56,6 +66,8 @@ public class ETFRenderContext {
     public static void setCurrentEntity(ETFEntity currentEntity) {
         //assert this
         allowRenderLayerTextureModify = true;
+        currentEntityNBT = null;
+        entityNBT_UUID = null;
         ETFRenderContext.currentEntity = currentEntity;
     }
 
@@ -103,6 +115,8 @@ public class ETFRenderContext {
         allowedToPatch = false;
         allowRenderLayerTextureModify = true;
         limitModifyToProperties = false;
+        currentEntityNBT = null;
+        entityNBT_UUID = null;
     }
 
     @SuppressWarnings("unused")//used in EMF
