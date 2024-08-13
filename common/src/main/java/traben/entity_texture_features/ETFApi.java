@@ -455,19 +455,17 @@ public final class ETFApi {
                 //no variation at all
                 return null;
             } else if (/*only*/ optifine == null) {
-                //todo why was this there     if (source != ETFManager.TextureSource.ENTITY_FEATURE) {
                 return random;
             } else if (/*only*/ random == null) {
                 //optifine random confirmed
                 return optifine;
             } else {
-                //if 2.png is higher it MUST be treated as true random confirmed
+                //if 2.png is higher it MUST be treated as true random
                 if (optifine.getPackName() != null
                         && optifine.getPackName().equals(ETFUtils2.returnNameOfHighestPackFromTheseTwo(
                         random.getPackName(), optifine.getPackName()))) {
                     return optifine;
                 } else {
-                    //todo why was this there     if (source != ETFManager.TextureSource.ENTITY_FEATURE) {
                     return random;
                 }
             }

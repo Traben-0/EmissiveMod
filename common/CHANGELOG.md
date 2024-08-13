@@ -3,6 +3,7 @@
 
 - changed gui icon
 - added checks to ensure random property suffixes are always valid integers above 0
+- fixed crash when rendering entity nameplates and having renderlayer overrides affect entity shadows
 
 [6.1.4]
 - fixed crash with minecraft china edition
