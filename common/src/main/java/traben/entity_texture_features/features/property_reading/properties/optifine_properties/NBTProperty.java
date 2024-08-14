@@ -51,7 +51,6 @@ public class NBTProperty extends RandomProperty {
     public static NBTProperty getPropertyOrNull(Properties properties, int propertyNum) {
         try {
             final NBTProperty nbtProperty = new NBTProperty(properties, propertyNum);
-            System.out.println("valid NBT property created");
             return nbtProperty;
         } catch (RandomPropertyException e) {
             return null;
