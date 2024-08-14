@@ -28,29 +28,26 @@ public class TrueRandomProvider implements ETFApi.ETFVariantSuffixProvider {
 
     @Nullable
     public static TrueRandomProvider of(ResourceLocation vanillaIdentifier) {
-
-
         ResourceManager resources = Minecraft.getInstance().getResourceManager();
 
         ResourceLocation second = ETFDirectory.getDirectoryVersionOf(ETFUtils2.addVariantNumberSuffix(vanillaIdentifier, 2));
-        if (second != null) {
-            String secondPack = resources.getResource(second).map(Resource::sourcePackId).orElse(null);
-            String vanillaPack = resources.getResource(vanillaIdentifier).map(Resource::sourcePackId).orElse(null);
+        if (second == null) return null;
 
-            if (secondPack != null
-                    && secondPack.equals(ETFUtils2.returnNameOfHighestPackFromTheseTwo(secondPack, vanillaPack))) {
-                int totalTextureCount = 2;
-                while (ETFDirectory.getDirectoryVersionOf(ETFUtils2.addVariantNumberSuffix(vanillaIdentifier, totalTextureCount + 1))
-                        != null) {
-                    totalTextureCount++;
-                }
-                return new TrueRandomProvider(secondPack, totalTextureCount);
-            }
+        @Nullable String secondPack = resources.getResource(second).map(Resource::sourcePackId).orElse(null);
+        @Nullable String vanillaPack = resources.getResource(vanillaIdentifier).map(Resource::sourcePackId).orElse(null);
+
+        if (secondPack == null || !secondPack.equals(ETFUtils2.returnNameOfHighestPackFromTheseTwo(secondPack, vanillaPack))) {
+            return null;
         }
-        return null;
+
+        int totalTextureCount = 2;
+        while (ETFDirectory.getDirectoryVersionOf(ETFUtils2.addVariantNumberSuffix(vanillaIdentifier, totalTextureCount + 1)) != null) {
+            totalTextureCount++;
+        }
+        return new TrueRandomProvider(secondPack, totalTextureCount);
     }
 
-    public String getPackName() {
+    public @Nullable String getPackName() {
         return packname;
     }
 
@@ -62,9 +59,9 @@ public class TrueRandomProvider implements ETFApi.ETFVariantSuffixProvider {
     @SuppressWarnings("unused")
     @Override
     public IntOpenHashSet getAllSuffixes() {
-        IntOpenHashSet allSuffixes = new IntOpenHashSet();
-        for (int i = 0; i < suffixTotal; i++) {
-            allSuffixes.add(i + 1);
+        IntOpenHashSet allSuffixes = new IntOpenHashSet(suffixTotal);
+        for (int i = 1; i <= suffixTotal; i++) {
+            allSuffixes.add(i);
         }
         return allSuffixes;
     }

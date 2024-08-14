@@ -154,9 +154,9 @@ public abstract class ETFUtils2 {
     }
 
     @Nullable
-    public static String returnNameOfHighestPackFromTheseTwo(String pack1, String pack2) {
+    public static String returnNameOfHighestPackFromTheseTwo(@Nullable String pack1, @Nullable String pack2) {
         if (pack1 == null) return null;
-        if (pack1.equals(pack2)) return pack1;
+        if (pack1.equals(pack2) || pack2 == null) return pack1;
 
         return ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER.indexOf(pack1) >= ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER.indexOf(pack2) ? pack1 : pack2;
     }

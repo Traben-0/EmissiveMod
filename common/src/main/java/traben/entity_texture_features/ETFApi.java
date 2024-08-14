@@ -460,14 +460,7 @@ public final class ETFApi {
                 //optifine random confirmed
                 return optifine;
             } else {
-                //if 2.png is higher it MUST be treated as true random
-                if (optifine.getPackName() != null
-                        && optifine.getPackName().equals(ETFUtils2.returnNameOfHighestPackFromTheseTwo(
-                        random.getPackName(), optifine.getPackName()))) {
-                    return optifine;
-                } else {
-                    return random;
-                }
+                return optifine.isHigherPackThan(random.getPackName()) ? optifine : random;
             }
         }
 

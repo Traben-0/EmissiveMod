@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.features.property_reading.properties.RandomProperty;
 import traben.entity_texture_features.utils.ETFEntity;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,70 +49,38 @@ public abstract class StringArrayOrRegexProperty extends RandomProperty {
     }
 
     @Nullable
-    public static StringArrayOrRegexProperty.RegexAndPatternPropertyMatcher getStringMatcher_Regex_Pattern_List_Single(@Nullable String propertyLineToBeMatchedPossiblyRegex) {
-        if (propertyLineToBeMatchedPossiblyRegex == null || propertyLineToBeMatchedPossiblyRegex.isBlank())
-            return null;
-        String stringToMatch = propertyLineToBeMatchedPossiblyRegex.trim();
-        boolean invert;
-        //boolean check = false;
-        //should not happen in nbt
-        if (stringToMatch.startsWith("!")) {
-            stringToMatch = stringToMatch.replaceFirst("!", "");
-            invert = true;
-        } else {
-            invert = false;
-        }
+    public static StringArrayOrRegexProperty.RegexAndPatternPropertyMatcher getStringMatcher_Regex_Pattern_List_Single(@Nullable String propertyLine) {
+        if (propertyLine == null || propertyLine.isBlank()) return null;
 
-        if (stringToMatch.contains("regex:")) {
-            if (stringToMatch.contains("iregex:")) {
-                stringToMatch = stringToMatch.replaceFirst("iregex:", "");
-                String finalStringToMatch = stringToMatch;
-                return (string) -> invert != string.matches("(?i)" + finalStringToMatch);
-            } else {
-                stringToMatch = stringToMatch.replaceFirst("regex:", "");
-                String finalStringToMatch = stringToMatch;
-                return (string) -> invert != string.matches(finalStringToMatch);
-            }
-        } else if (stringToMatch.contains("pattern:")) {
-            stringToMatch = "\\Q" + stringToMatch;
-            stringToMatch = stringToMatch.replace("*", "\\E.*\\Q").replace("?", "\\E.+\\Q");
-            if (stringToMatch.contains("ipattern:")) {
-                stringToMatch = stringToMatch.replace("ipattern:", "");
-                String finalStringToMatch = stringToMatch;
-                return (string) -> invert != string.matches("(?i)" + finalStringToMatch);
-            } else {
-                stringToMatch = stringToMatch.replace("pattern:", "");
-                String finalStringToMatch = stringToMatch;
-                return (string) -> invert != string.matches(finalStringToMatch);
-            }
+        String stringToMatch = propertyLine.trim();
+        final boolean invert = stringToMatch.startsWith("!");
+        if (invert) stringToMatch = stringToMatch.substring(1);
+
+        if (stringToMatch.startsWith("regex:") || stringToMatch.startsWith("iregex:")) {
+            final boolean ignoreCase = stringToMatch.startsWith("i");
+            final String finalStringToMatch = stringToMatch.replaceFirst("iregex:|regex:", "");
+            return (string) -> invert != string.matches(ignoreCase ? "(?i)" + finalStringToMatch : finalStringToMatch);
+        }else if (stringToMatch.startsWith("pattern:") || stringToMatch.startsWith("ipattern:")) {
+            final boolean ignoreCase = stringToMatch.startsWith("i");
+            stringToMatch = stringToMatch.replaceFirst("ipattern:|pattern:", "").replace("*", "\\E.*\\Q").replace("?", "\\E.+\\Q");
+            final String finalStringToMatch = "\\Q" + stringToMatch + "\\E";
+            return (string) -> invert != string.matches(ignoreCase ? "(?i)" + finalStringToMatch : finalStringToMatch);
         } else {//direct comparison
-            String finalStringToMatch1 = stringToMatch;
-            boolean finalDoPattern = finalStringToMatch1.contains("\"");
-            String[] finalSplitMatches = stringToMatch.split("\\s+");
+            String[] splitMatches = stringToMatch.split("\\s+");
+            boolean hasQuotes = stringToMatch.contains("\"");
+            final String finalString = stringToMatch;
             return (string) -> {
-                boolean check = false;
-                if (string.equals(finalStringToMatch1)) {
-                    check = true;
-                } else {
-                    for (String singleValue : finalSplitMatches) {
-                        if (string.equals(singleValue)) {
-                            check = true;
+                boolean matchFound = string.equals(finalString) || Arrays.asList(splitMatches).contains(string);
+                if (!matchFound && hasQuotes) {
+                    Matcher m = GROUP_BY_QUOTATION_PATTERN.matcher(finalString);
+                    while (m.find()) {
+                        if (string.equals(m.group(1).replace("\"", "").trim())) {
+                            matchFound = true;
                             break;
                         }
                     }
-                    //if still needed try a quotation check cause why not
-                    if (finalDoPattern && !check) {
-                        Matcher m = GROUP_BY_QUOTATION_PATTERN.matcher(finalStringToMatch1);
-                        while (m.find()) {
-                            String foundInBrackets = m.group(1).replace("\"", "").trim();
-                            if (string.equals(foundInBrackets)) {
-                                check = true;
-                                break;
-                            }
-                        }
-                    }
                 }
-                return invert != check;
+                return invert != matchFound;
             };
         }
     }
@@ -122,12 +91,10 @@ public abstract class StringArrayOrRegexProperty extends RandomProperty {
             if (string.startsWith("!")) {
                 matches = true;
                 if (string.substring(1).equals(fromEntity)) {
-                    matches = false;
-                    break;
+                    return false;
                 }
             } else if (string.equals(fromEntity)) {
-                matches = true;
-                break;
+                return true;
             }
         }
         return matches;
@@ -135,7 +102,6 @@ public abstract class StringArrayOrRegexProperty extends RandomProperty {
 
     @Override
     public boolean testEntityInternal(ETFEntity entity) {
-
         String entityString = getValueFromEntity(entity);
         if (entityString != null) {
             return MATCHER.testString(shouldForceLowerCaseCheck() ? entityString.toLowerCase() : entityString);
