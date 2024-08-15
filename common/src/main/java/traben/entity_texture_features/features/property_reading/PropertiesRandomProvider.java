@@ -61,6 +61,11 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
                 return null;
             }
 
+            //assure default return always present
+            if (!propertyRules.get(propertyRules.size()-1).isAlwaysMet()){
+                propertyRules.add(RandomPropertyRule.defaultReturn);
+            }
+
             ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
             String properties = resourceManager.getResource(propertiesFileIdentifier).map(Resource::sourcePackId).orElse(null);
             String vanillaPack = resourceManager.getResource(vanillaIdentifier).map(Resource::sourcePackId).orElse(null);

@@ -3,7 +3,6 @@ package traben.entity_texture_features.features.property_reading.properties.opti
 import it.unimi.dsi.fastutil.Function;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import org.jetbrains.annotations.NotNull;
-import traben.entity_texture_features.features.ETFRenderContext;
 import traben.entity_texture_features.features.property_reading.properties.RandomProperty;
 import traben.entity_texture_features.features.property_reading.properties.generic_properties.SimpleIntegerArrayProperty;
 import traben.entity_texture_features.features.property_reading.properties.generic_properties.StringArrayOrRegexProperty;
@@ -39,7 +38,7 @@ public class NBTProperty extends RandomProperty {
                 if (!nbtName.isBlank() && !instruction.isBlank()) {
                     printAll = printAll || instruction.startsWith("print_all:");
 
-                    NBT_MAP.put(nbtName, NBTInstructionType.get(nbtName, instruction));
+                    NBT_MAP.put(nbtName, NBTTester.of(nbtName, instruction));
                 } else {
                     throw new RandomPropertyException("NBT failed, as instruction or nbt name was blank: " + keyPrefix + nbtName + "=" + instruction);
                 }
@@ -50,8 +49,7 @@ public class NBTProperty extends RandomProperty {
 
     public static NBTProperty getPropertyOrNull(Properties properties, int propertyNum) {
         try {
-            final NBTProperty nbtProperty = new NBTProperty(properties, propertyNum);
-            return nbtProperty;
+            return new NBTProperty(properties, propertyNum);
         } catch (RandomPropertyException e) {
             return null;
         }
@@ -65,6 +63,8 @@ public class NBTProperty extends RandomProperty {
             return false;
         }
     }
+
+
 
     @Override
     protected boolean testEntityInternal(ETFEntity entity) {
@@ -81,15 +81,18 @@ public class NBTProperty extends RandomProperty {
         for (Map.Entry<String, NBTTester> nbtPropertyEntry : NBT_MAP.entrySet()) {
             NBTTester data = nbtPropertyEntry.getValue();
             Tag finalNBTElement = findNBTElement(entityNBT, nbtPropertyEntry.getKey());
-            if (data.print) {
-                String printString = finalNBTElement == null ? "<NBT component not found>" : finalNBTElement.getAsString();
-                ETFUtils2.logMessage("NBT property [single] print: " + nbtPropertyEntry.getKey() + "=" + printString);
-            }
+
 
             boolean doesTestPass = finalNBTElement == null ? data.wantsBlank : data.tester.apply(finalNBTElement);
-            if (data.instructionType.isNegated() != doesTestPass) {
-                return false;
+
+            if (data.print) {
+                String printString = finalNBTElement == null ? "<NBT component not found>" : finalNBTElement.getAsString();
+                ETFUtils2.logMessage("NBT property [single] print data: " + nbtPropertyEntry.getKey() + "=" + printString);
+                ETFUtils2.logMessage("NBT property [single] print result: " + (data.inverts != doesTestPass));
+
             }
+
+            return data.inverts != doesTestPass;
         }
         return true;
     }
@@ -176,17 +179,10 @@ public class NBTProperty extends RandomProperty {
         return null;
     }
 
-    private enum NBTInstructionType {
-        RAW,
-        EXISTS,
-        RANGE,
-        NONE,
-        RAW_N,
-        EXISTS_N,
-        RANGE_N,
-        NONE_N;
+    public record NBTTester(boolean inverts, Function<Tag, Boolean> tester, boolean wantsBlank,
+                             boolean print) {
 
-        static NBTTester get(String nbtId, String instructionMaybePrint) throws RandomPropertyException {
+        public static NBTTester of(String nbtId, String instructionMaybePrint) throws RandomPropertyException {
             try {
                 String step1 = instructionMaybePrint.replaceFirst("^print_all:", "");
 
@@ -204,17 +200,17 @@ public class NBTProperty extends RandomProperty {
                     if (matcher == null)
                         throw new RandomPropertyException("NBT failed, as raw: instruction was invalid: " + instruction);
 
-                    return new NBTTester(invert ? RAW_N : RAW,
+                    return new NBTTester(invert,
                             s -> matcher.testString(((Tag) s).getAsString()), blank, printSingle);
                 }
                 if (instruction.startsWith("exists:")) {
                     boolean exists = instruction.contains("exists:true");
                     boolean notExists = instruction.contains("exists:false");
-                    return new NBTTester(invert ? EXISTS_N : EXISTS, s -> exists, notExists, printSingle);
+                    return new NBTTester(invert, s -> exists, notExists, printSingle);
                 }
                 if (instruction.startsWith("range:")) {
                     SimpleIntegerArrayProperty.IntRange range = SimpleIntegerArrayProperty.getIntRange(instruction.replaceFirst("range:", ""));
-                    return new NBTTester(invert ? RANGE_N : RANGE, s -> {
+                    return new NBTTester(invert, s -> {
                         if (s instanceof NumericTag nbtNumber) {
                             return range.isWithinRange(nbtNumber.getAsNumber().intValue());
                         }
@@ -228,7 +224,7 @@ public class NBTProperty extends RandomProperty {
                 if (matcher == null)
                     throw new RandomPropertyException("NBT failed, as instruction was invalid: " + instruction);
 
-                return new NBTTester(invert ? NONE_N : NONE, s -> {
+                return new NBTTester(invert, s -> {
                     String test = (s instanceof NumericTag) ? ((Tag) s).getAsString().replaceAll("[^\\d.]", "") : ((Tag) s).getAsString();
                     return matcher.testString(test);
                 }, false, false);
@@ -239,13 +235,5 @@ public class NBTProperty extends RandomProperty {
                 throw new RandomPropertyException("NBT failed, unexpected exception: " + e.getMessage());
             }
         }
-
-        boolean isNegated() {
-            return this.ordinal() > 3;
-        }
-    }
-
-    private record NBTTester(NBTInstructionType instructionType, Function<Tag, Boolean> tester, boolean wantsBlank,
-                             boolean print) {
     }
 }

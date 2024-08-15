@@ -15,6 +15,31 @@ public class RandomPropertyRule {
     private final boolean RULE_ALWAYS_APPROVED;
     private final boolean UPDATES;
 
+    static final RandomPropertyRule defaultReturn = new RandomPropertyRule(){
+        @Override
+        public int getVariantSuffixFromThisCase(final int seed) {
+            return 1;
+        }
+
+        @Override
+        public boolean doesEntityMeetConditionsOfThisCase(final ETFEntity etfEntity, final boolean isUpdate, final EntityBooleanLRU UUID_CaseHasUpdateablesCustom) {
+            return true;
+        }
+    };
+
+    private RandomPropertyRule(){
+        RULE_NUMBER = 0;//used for rule matching settings
+        PROPERTY_FILE = "default setter";
+        SUFFIX_NUMBERS_WEIGHTED = new Integer[]{1};
+        PROPERTIES_TO_TEST = new RandomProperty[]{};
+        RULE_ALWAYS_APPROVED = true;
+        UPDATES = false;
+    }
+
+    public boolean isAlwaysMet(){
+        return RULE_ALWAYS_APPROVED;
+    }
+
 
     public RandomPropertyRule(
             String propertiesFile,

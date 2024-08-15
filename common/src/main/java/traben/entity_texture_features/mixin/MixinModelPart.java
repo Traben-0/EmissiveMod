@@ -61,7 +61,7 @@ public abstract class MixinModelPart {
     private void etf$doEmissiveIfInitialPart(final PoseStack matrices, final VertexConsumer vertices, final int light, final int overlay, final int k, final CallbackInfo ci) {
     #endif
         //run code if this is the initial topmost rendered part
-        if (ETFRenderContext.getCurrentModelPartDepth() != 1) {
+        if (ETFRenderContext.getCurrentModelPartDepth() > 1) {
             ETFRenderContext.decrementCurrentModelPartDepth();
         } else {
             //top level model so try special rendering
