@@ -364,16 +364,16 @@ public class ETFPlayerTexture {
 
     private static void forceSolidLowerSkin(NativeImage skin) {
         try {
-            stripAlpha(skin, 8, 0, 23, 15);
-            stripAlpha(skin, 0, 20, 55, 31);
-            stripAlpha(skin, 0, 8, 7, 15);
-            stripAlpha(skin, 24, 8, 31, 15);
-            stripAlpha(skin, 0, 16, 11, 19);
-            stripAlpha(skin, 20, 16, 35, 19);
-            stripAlpha(skin, 44, 16, 51, 19);
-            stripAlpha(skin, 20, 48, 27, 51);
-            stripAlpha(skin, 36, 48, 43, 51);
-            stripAlpha(skin, 16, 52, 47, 63);
+            stripAlphaInclusive(skin, 8, 0, 23, 15);
+            stripAlphaInclusive(skin, 0, 20, 55, 31);
+            stripAlphaInclusive(skin, 0, 8, 7, 15);
+            stripAlphaInclusive(skin, 24, 8, 31, 15);
+            stripAlphaInclusive(skin, 0, 16, 11, 19);
+            stripAlphaInclusive(skin, 20, 16, 35, 19);
+            stripAlphaInclusive(skin, 44, 16, 51, 19);
+            stripAlphaInclusive(skin, 20, 48, 27, 51);
+            stripAlphaInclusive(skin, 36, 48, 43, 51);
+            stripAlphaInclusive(skin, 16, 52, 47, 63);
         } catch (Exception ignored) {
         }
     }
@@ -458,9 +458,9 @@ public class ETFPlayerTexture {
 //        return etfCape != null;
 //    }
 
-    private static void stripAlpha(NativeImage image, int x1, int y1, int x2, int y2) {
-        for (int i = x1; i < x2; ++i) {
-            for (int j = y1; j < y2; ++j) {
+    private static void stripAlphaInclusive(NativeImage image, int x1, int y1, int x2, int y2) {
+        for (int i = x1; i <= x2; ++i) {
+            for (int j = y1; j <= y2; ++j) {
                 image.setPixelRGBA(i, j, image.getPixelRGBA(i, j) | -16777216);
             }
         }
