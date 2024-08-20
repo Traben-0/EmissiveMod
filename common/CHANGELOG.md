@@ -1,6 +1,6 @@
 [**ETF Changelog:**]
 
-
+[6.2]
 - forge 1.21 & 1.20.6 fixed
 - changed gui icon
 - added checks to ensure random property suffixes are always valid integers above 0
