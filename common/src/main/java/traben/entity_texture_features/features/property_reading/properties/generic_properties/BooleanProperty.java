@@ -21,8 +21,7 @@ public abstract class BooleanProperty extends RandomProperty {
     public static Boolean getGenericBooleanThatCanNull(Properties props, int num, String... propertyNames) {
         if (propertyNames.length == 0)
             throw new IllegalArgumentException("BooleanProperty, empty property names given");
-        for (String propertyName :
-                propertyNames) {
+        for (String propertyName : propertyNames) {
             if (props.containsKey(propertyName + "." + num)) {
                 String input = props.getProperty(propertyName + "." + num).trim();
                 if ("true".equals(input) || "false".equals(input)) {
@@ -32,13 +31,11 @@ public abstract class BooleanProperty extends RandomProperty {
                 }
             }
         }
-
         return null;
     }
 
     @Override
     public boolean testEntityInternal(ETFEntity entity) {
-
         Boolean entityBoolean = getValueFromEntity(entity);
         if (entityBoolean != null) {
             return BOOLEAN == entityBoolean;

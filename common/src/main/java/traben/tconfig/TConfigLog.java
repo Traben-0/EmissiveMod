@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 public class TConfigLog {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Entity Features");
-    //sets whether to display config load warning in gui
-
 
     public static void log(String ID, String message) {
         LOGGER.info(ID + ": " + message);

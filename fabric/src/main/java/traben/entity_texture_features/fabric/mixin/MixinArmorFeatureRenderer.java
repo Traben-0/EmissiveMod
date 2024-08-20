@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 #if MC >= MC_20_6
 import net.minecraft.core.Holder;
@@ -59,13 +60,13 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extend
     @Inject(method = "renderModel",
             at = @At(value = "TAIL"))
     #if MC >= MC_21
-    private void etf$applyEmissive(final PoseStack matrices, final MultiBufferSource vertexConsumers, final int light, final A model, final int j, final ResourceLocation resourceLocation, final CallbackInfo ci) {
+    private void etf$applyEmissive(final PoseStack matrices, final MultiBufferSource vertexConsumers, final int light, final A model, final int k, final ResourceLocation resourceLocation, final CallbackInfo ci) {
     #elif MC >= MC_20_6
     private void etf$applyEmissive(final PoseStack matrices, final MultiBufferSource vertexConsumers, final int light, final A model, final float red, final float green, final float blue, final ResourceLocation overlay, final CallbackInfo ci) {
     #else
     private void etf$applyEmissive(final PoseStack matrices, final MultiBufferSource vertexConsumers, final int light, final ArmorItem armorItem, final A model, final boolean bl, final float red, final float green, final float blue, final String string, final CallbackInfo ci) {
     #endif
-        etf$armorHandler.renderBaseEmissive(matrices,vertexConsumers,model,#if MC >= MC_21 0,0, 0 #else red,green,blue #endif);
+        etf$armorHandler.renderBaseEmissive(matrices,vertexConsumers,model,#if MC >= MC_21 FastColor.ARGB32.red(k),FastColor.ARGB32.green(k), FastColor.ARGB32.blue(k) #else red,green,blue #endif);
     }
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
@@ -88,17 +89,17 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extend
         etf$armorHandler.setTrim(armorMaterial,trim,leggings);
     }
 
-    @ModifyArg(method = "renderTrim",
-            at = @At(value = "INVOKE",
-                    #if MC < MC_21
-                    target = "Lnet/minecraft/client/model/HumanoidModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"),
-                    #else
-                    target = "Lnet/minecraft/client/model/HumanoidModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"),
-                    #endif
-            index = 1)
-    private VertexConsumer etf$changeTrim(VertexConsumer par2) {
-        return etf$armorHandler.modifyTrim(par2);
-    }
+//    @ModifyArg(method = "renderTrim",
+//            at = @At(value = "INVOKE",
+//                    #if MC < MC_21
+//                    target = "Lnet/minecraft/client/model/HumanoidModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"),
+//                    #else
+//                    target = "Lnet/minecraft/client/model/HumanoidModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"),
+//                    #endif
+//            index = 1)
+//    private VertexConsumer etf$changeTrim(VertexConsumer par2) {
+//        return etf$armorHandler.modifyTrim(par2);
+//    }
 
     @Inject(method = "renderTrim",
             at = @At(value = "TAIL"))

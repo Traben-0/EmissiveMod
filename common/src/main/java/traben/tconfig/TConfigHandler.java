@@ -66,17 +66,14 @@ public class TConfigHandler<T extends TConfig> {
     }
 
     public void saveToFile() {
-        if (ETFVersionDifferenceManager.getConfigDirectory() == null) return;
+        var configDir = ETFVersionDifferenceManager.getConfigDirectory();
+        if (configDir == null) return;
 
-        File config = new File(ETFVersionDifferenceManager.getConfigDirectory().toFile(), configFileName);
-        if (!config.getParentFile().exists()) {
-            //noinspection ResultOfMethodCallIgnored
-            config.getParentFile().mkdir();
-        }
-        try {
-            FileWriter fileWriter = new FileWriter(config);
+        File config = new File(configDir.toFile(), configFileName);
+        config.getParentFile().mkdirs();
+
+        try (FileWriter fileWriter = new FileWriter(config)) {
             fileWriter.write(toJson());
-            fileWriter.close();
         } catch (IOException e) {
             TConfigLog.logError(logID, "Config file could not be saved: " + e.getMessage());
         }
@@ -91,40 +88,30 @@ public class TConfigHandler<T extends TConfig> {
     }
 
     public void loadFromFile() {
-        if (ETFVersionDifferenceManager.getConfigDirectory() == null) {
+        var configDir = ETFVersionDifferenceManager.getConfigDirectory();
+        if (configDir == null) {
+            CONFIG = newConfigSupplier.get();
+            return;
+        }
+
+        File config = new File(configDir.toFile(), configFileName);
+        if (config.exists()) {
+            try (FileReader fileReader = new FileReader(config)) {
+                CONFIG = fromJson(fileReader);
+            } catch (IOException e) {
+                TConfigLog.log(logID, "Config could not be loaded, using defaults");
+                CONFIG = newConfigSupplier.get();
+            }
+        } else {
             CONFIG = newConfigSupplier.get();
         }
-        try {
-            File config = new File(ETFVersionDifferenceManager.getConfigDirectory().toFile(), configFileName);
-            if (config.exists()) {
-                try {
-                    FileReader fileReader = new FileReader(config);
-                    CONFIG = fromJson(fileReader);
-                    fileReader.close();
-                    saveToFile();
-                } catch (IOException e) {
-                    TConfigLog.log(logID, "Config could not be loaded, using defaults");
-                    CONFIG = newConfigSupplier.get();
-                    saveToFile();
-//                    EFCommon.configHadLoadError = true;
-                }
-            } else {
-                CONFIG = newConfigSupplier.get();
-                saveToFile();
-            }
-            if (CONFIG == null) {
-                TConfigLog.log(logID, "Config was null, using defaults");
-                CONFIG = newConfigSupplier.get();
-                saveToFile();
-//                EFCommon.configHadLoadError = true;
-            }
-        } catch (Exception e) {
-            TConfigLog.logError(logID, "Config was corrupt or broken, using defaults");
-            e.printStackTrace();
+
+        if (CONFIG == null) {
+            TConfigLog.log(logID, "Config was null, using defaults");
             CONFIG = newConfigSupplier.get();
-            saveToFile();
-//            EFCommon.configHadLoadError = true;
         }
+
+        saveToFile();
     }
 
     public T fromJson(String json) {

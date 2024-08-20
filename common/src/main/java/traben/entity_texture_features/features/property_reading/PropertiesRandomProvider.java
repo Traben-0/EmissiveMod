@@ -28,7 +28,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
 
     protected final EntityBooleanLRU entityCanUpdate = new EntityBooleanLRU(1000);
 
-    protected final String packname;
+    protected final @NotNull String packname;
     protected EntityRandomSeedFunction entityRandomSeedFunction = (entity) -> entity.etf$getUuid().hashCode();
     protected BiConsumer<ETFEntity, @Nullable RandomPropertyRule> onMeetsRule = (entity, rule) -> {
     };
@@ -61,6 +61,11 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
                 return null;
             }
 
+            //assure default return always present
+            if (!propertyRules.get(propertyRules.size()-1).isAlwaysMet()){
+                propertyRules.add(RandomPropertyRule.defaultReturn);
+            }
+
             ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
             String properties = resourceManager.getResource(propertiesFileIdentifier).map(Resource::sourcePackId).orElse(null);
             String vanillaPack = resourceManager.getResource(vanillaIdentifier).map(Resource::sourcePackId).orElse(null);
@@ -76,7 +81,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
         return null;
     }
 
-    public static List<RandomPropertyRule> getAllValidPropertyObjects(Properties properties, ResourceLocation propertiesFilePath, String... suffixToTest) {
+    public static List<RandomPropertyRule> getAllValidPropertyObjects(Properties properties, ResourceLocation propertiesFilePath, String... suffixToTest) throws Exception {
         Set<String> propIds = properties.stringPropertyNames();
         //set so only 1 of each
         List<Integer> numbersList = getCaseNumbers(propIds);
@@ -88,7 +93,6 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
             //loops through each known number in properties
             //all rule.1 ect should be processed here
             Integer[] suffixesOfRule = getSuffixes(properties, ruleNumber, suffixToTest);
-
 
             //list easier to build
             if (suffixesOfRule != null && suffixesOfRule.length != 0) {
@@ -111,8 +115,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
         Set<Integer> foundRuleNumbers = new HashSet<>();
 
         //get the foundRuleNumbers we are working with
-        for (String str :
-                propIds) {
+        for (String str : propIds) {
             String[] split = str.split("\\.");
             if (split.length >= 2 && !split[1].isBlank()) {
                 String possibleRuleNumber = split[1].replaceAll("\\D", "");
@@ -130,8 +133,17 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
     }
 
     @Nullable
-    private static Integer[] getSuffixes(Properties props, int num, String... suffixToTest) {
-        return SimpleIntegerArrayProperty.getGenericIntegerSplitWithRanges(props, num, suffixToTest);
+    private static Integer[] getSuffixes(Properties props, int num, String... suffixToTest) throws Exception {
+        var suffixes = SimpleIntegerArrayProperty.getGenericIntegerSplitWithRanges(props, num, suffixToTest);
+        //throw if it contains 0 or negatives
+        if (suffixes != null) {
+            for (Integer suffix : suffixes) {
+                if (suffix < 1) {
+                    throw new Exception("Invalid suffix: [" + suffix + "] in " + Arrays.toString(suffixes));
+                }
+            }
+        }
+        return suffixes;
     }
 
     @Nullable
@@ -145,8 +157,12 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
             this.onMeetsRule = onMeetsRule;
     }
 
-    public String getPackName() {
+    public @NotNull String getPackName() {
         return packname;
+    }
+
+    public boolean isHigherPackThan(@Nullable String packNameOther){
+        return packname.equals(ETFUtils2.returnNameOfHighestPackFromTheseTwo(packname, packNameOther));
     }
 
     @Override
@@ -177,31 +193,31 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
         boolean entityHasBeenTestedBefore = entityCanUpdate.containsKey(id);
         if (entityHasBeenTestedBefore) {
             //return andNothingElse
-            for (RandomPropertyRule rule : propertyRules) {
-                if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, true, entityCanUpdate)) {
-                    onMeetsRule.accept(entityToBeTested, rule);
-                    return rule.getVariantSuffixFromThisCase(entityRandomSeedFunction.toInt(entityToBeTested));
-                }
-            }
+            int result = testEntityAgainstRules(entityToBeTested);
+            if (result > 0) return result;
         } else {
             //return but capture spawn conditions of first time entity
-            int foundSuffix = 0;
-            for (RandomPropertyRule rule : propertyRules) {
-                if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, false, entityCanUpdate)) {
-                    onMeetsRule.accept(entityToBeTested, rule);
-                    foundSuffix = rule.getVariantSuffixFromThisCase(entityRandomSeedFunction.toInt(entityToBeTested));
-                    break;
-                }
-            }
-            if (entityCanUpdate.getBoolean(entityToBeTested.etf$getUuid())) {
+            int result = testEntityAgainstRules(entityToBeTested);
+            //must be done separate to, and after, above method as it sets the entityCanUpdate return
+            if (entityCanUpdate.getBoolean(id)) {
                 for (RandomPropertyRule rule : propertyRules) {
                     //cache entity spawns
                     rule.cacheEntityInitialResultsOfNonUpdatingProperties(entityToBeTested);
                 }
             }
-            return foundSuffix;
+            if (result > 0) return result;
         }
         onMeetsRule.accept(entityToBeTested, null);
+        return 0;
+    }
+
+    private int testEntityAgainstRules(final ETFEntity entityToBeTested) {
+        for (RandomPropertyRule rule : propertyRules) {
+            if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, true, entityCanUpdate)) {
+                onMeetsRule.accept(entityToBeTested, rule);
+                return rule.getVariantSuffixFromThisCase(entityRandomSeedFunction.toInt(entityToBeTested));
+            }
+        }
         return 0;
     }
 

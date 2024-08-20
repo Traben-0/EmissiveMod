@@ -2,6 +2,9 @@ package traben.entity_texture_features.neoforge;
 
 
 #if MC >= MC_20_6
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 #else
 import net.neoforged.neoforge.client.ConfigScreenHandler;
@@ -27,13 +30,17 @@ public class ETFClientNeoForge {
         if (FMLEnvironment.dist.isClient()) {
             try {
                 ModLoadingContext.get().registerExtensionPoint(
-                        #if MC >= MC_20_6
+                        #if MC >= MC_21
                         IConfigScreenFactory.class,
-                        ()-> ETF::getConfigScreen);
+                        ()-> this::createScreen
+                        #elif MC >= MC_20_6
+                        IConfigScreenFactory.class,
+                        ()-> ETF::getConfigScreen
                         #else
                         ConfigScreenHandler.ConfigScreenFactory.class,
-                        ()-> new ConfigScreenHandler.ConfigScreenFactory(ETF::getConfigScreen));
+                        ()-> new ConfigScreenHandler.ConfigScreenFactory(ETF::getConfigScreen)
                         #endif
+                );
                        // () -> new ConfigScreenHandler.ConfigScreenFactory(ETF::getConfigScreen));
             } catch (NoClassDefFoundError e) {
                 System.out.println("[Entity Texture Features]: Mod config broken, download latest forge version");
@@ -44,6 +51,10 @@ public class ETFClientNeoForge {
             throw new UnsupportedOperationException("Attempting to load a clientside only mod on the server, refusing");
         }
     }
-
+    #if MC >= MC_21
+    Screen createScreen(ModContainer arg, Screen arg2){
+        return ETF.getConfigScreen(arg2);
+    }
+    #endif
 
 }

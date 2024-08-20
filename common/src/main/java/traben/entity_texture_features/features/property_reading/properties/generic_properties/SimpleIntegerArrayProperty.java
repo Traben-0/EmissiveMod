@@ -41,26 +41,24 @@ public abstract class SimpleIntegerArrayProperty extends RandomProperty {
                 propertyNames) {
             if (propertyName != null && !propertyName.isBlank() && props.containsKey(propertyName + "." + num)) {
                 String dataFromProps = props.getProperty(propertyName + "." + num).strip().replaceAll("[)(]", "");
-                String[] skinData = dataFromProps.split("\\s+");
-                ArrayList<Integer> suffixNumbers = new ArrayList<>();
-                for (String data :
-                        skinData) {
+                ArrayList<Integer> integers = new ArrayList<>();
+                for (String data : dataFromProps.split("\\s+")) {
                     //check if range
                     data = data.strip();
                     if (!data.replaceAll("\\D", "").isEmpty()) {
                         try {
                             if (data.contains("-")) {
-                                suffixNumbers.addAll(Arrays.asList(getIntRange(data).getAllWithinRangeAsList()));
+                                integers.addAll(Arrays.asList(getIntRange(data).getAllWithinRangeAsList()));
                             } else {
-                                int tryNumber = Integer.parseInt(data.replaceAll("\\D", ""));
-                                suffixNumbers.add(tryNumber);
+                                integers.add(Integer.parseInt(data.replaceAll("\\D", "")));
                             }
                         } catch (NumberFormatException e) {
                             ETFUtils2.logWarn("properties files number error in " + propertyName + " category");
+                            return null;
                         }
                     }
                 }
-                return suffixNumbers.toArray(new Integer[0]);
+                return integers.toArray(new Integer[0]);
             }
         }
         return null;
@@ -80,7 +78,8 @@ public abstract class SimpleIntegerArrayProperty extends RandomProperty {
                 return new IntRange(single, single);
             }
         } catch (Exception e) {
-            return new IntRange(0, 0);
+            ETFUtils2.logError("Error parsing range: " + rawRange);
+            return new IntRange(Integer.MIN_VALUE, Integer.MIN_VALUE);
         }
     }
 
@@ -99,8 +98,8 @@ public abstract class SimpleIntegerArrayProperty extends RandomProperty {
     }
 
     public static class IntRange {
-        final int lower;
-        final int higher;
+        private final int lower;
+        private final int higher;
 
         public IntRange(int left, int right) {
             if (left > right) {
@@ -113,7 +112,7 @@ public abstract class SimpleIntegerArrayProperty extends RandomProperty {
         }
 
         public boolean isWithinRange(int value) {
-            return value >= lower && value <= higher;
+            return value >= getLower() && value <= getHigher();
         }
 
         public Integer[] getAllWithinRangeAsList() {
@@ -121,11 +120,19 @@ public abstract class SimpleIntegerArrayProperty extends RandomProperty {
                 return new Integer[]{lower};
             }
 
-            ArrayList<Integer> builder = new ArrayList<>();
+            List<Integer> builder = new ArrayList<>();
             for (int i = lower; i <= higher; i++) {
                 builder.add(i);
             }
             return builder.toArray(new Integer[0]);
+        }
+
+        public int getLower() {
+            return lower;
+        }
+
+        public int getHigher() {
+            return higher;
         }
     }
 }

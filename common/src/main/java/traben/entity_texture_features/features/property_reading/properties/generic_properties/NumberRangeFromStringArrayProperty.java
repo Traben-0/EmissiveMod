@@ -25,8 +25,7 @@ public abstract class NumberRangeFromStringArrayProperty<N extends Number> exten
         if (array.length == 0)
             throw new RandomPropertyException(getPropertyId() + " property was broken");
 
-        for (String str :
-                array) {
+        for (String str : array) {
             RangeTester<N> tester = getRangeTesterFromString(str);
             if (tester != null) ARRAY.add(tester);
         }
@@ -34,21 +33,13 @@ public abstract class NumberRangeFromStringArrayProperty<N extends Number> exten
 
     @Override
     public boolean testEntityInternal(ETFEntity entity) {
-
-        boolean check = false;
-        //always check percentage
         N checkValue = getRangeValueFromEntity(entity);
-        if (checkValue != null) {
-            for (RangeTester<N> range :
-                    ARRAY) {
-                if (range != null) {
-                    if (range.isValueWithinRangeOrEqual(checkValue)) {
-                        check = true;
-                        break;
-                    }
-                }
+        if (checkValue == null) return false;
+
+        for (RangeTester<N> range : ARRAY) {
+            if (range != null && range.isValueWithinRangeOrEqual(checkValue)) {
+                return true;
             }
-            return check;
         }
         return false;
     }

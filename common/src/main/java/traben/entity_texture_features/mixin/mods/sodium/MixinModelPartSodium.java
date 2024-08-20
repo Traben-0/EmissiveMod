@@ -46,7 +46,7 @@ public abstract class MixinModelPartSodium {
             at = @At(value = "RETURN"))
     private static void etf$doEmissiveIfInitialPart(PoseStack matrixStack, VertexBufferWriter writer, ModelPart part, int light, int overlay, int color, CallbackInfo ci) {
         //run code if this is the initial topmost rendered part
-        if (ETFRenderContext.getCurrentModelPartDepth() != 1) {
+        if (ETFRenderContext.getCurrentModelPartDepth() > 1) {
             ETFRenderContext.decrementCurrentModelPartDepth();
         } else {
             if (ETFRenderContext.isCurrentlyRenderingEntity()

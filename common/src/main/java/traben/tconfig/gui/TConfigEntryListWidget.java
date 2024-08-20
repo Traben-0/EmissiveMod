@@ -16,10 +16,7 @@ public class TConfigEntryListWidget extends AbstractSelectionList<TConfigEntryLi
             if (option == null || option.getWidget(0, 0, 0, 0) == null) continue;
             addEntry(option);
         }
-//        setRenderBackground(false);
-
         setX(x);
-
     }
 
     #if MC <= MC_20_2

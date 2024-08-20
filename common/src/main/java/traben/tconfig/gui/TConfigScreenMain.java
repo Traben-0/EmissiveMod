@@ -45,26 +45,23 @@ public abstract class TConfigScreenMain extends TConfigScreen {
     private void initConfigs() {
         if (haveInitConfigs) return;
         haveInitConfigs = true;
-        for (TConfigHandler<?> configHandler : configHandlers) {
-            if (configHandler.doesGUI()) {
-                TConfig config = configHandler.getConfig();
-                for (TConfigEntry value : config.getGUIOptions().getOptions().values()) {
-                    entries.add(value);
-                }
-                var icon = config.getModIcon();
-                if (icon != null) {
-                    modIcons.add(icon);
-                }
-            }
-        }
+
+        configHandlers.stream()
+                .filter(TConfigHandler::doesGUI)
+                .forEach(configHandler -> {
+                    TConfig config = configHandler.getConfig();
+                    entries.addAll(config.getGUIOptions().getOptions().values());
+                    ResourceLocation icon = config.getModIcon();
+                    if (icon != null) {
+                        modIcons.add(icon);
+                    }
+                });
     }
 
     @Override
     public void onClose() {
         if (entries.saveValuesToConfig()) {
-            for (TConfigHandler<?> configHandler : configHandlers) {
-                configHandler.saveToFile();
-            }
+            configHandlers.forEach(TConfigHandler::saveToFile);
             Minecraft.getInstance().reloadResourcePacks();
         }
         super.onClose();

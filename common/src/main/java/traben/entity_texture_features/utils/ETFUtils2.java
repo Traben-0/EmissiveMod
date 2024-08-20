@@ -95,7 +95,6 @@ public abstract class ETFUtils2 {
     }
 
     public static boolean renderEnchanted(ETFTexture texture, MultiBufferSource provider, int light, RenderMethodForOverlay renderer) {
-
         //attempt enchanted render
         ResourceLocation enchanted = texture.getEnchantIdentifierOfCurrentState();
         if (enchanted != null) {
@@ -120,15 +119,10 @@ public abstract class ETFUtils2 {
 
     @NotNull
     public static String addVariantNumberSuffix(String identifierString, int variant) {
-        String file;
-        if (identifierString.endsWith(".png")) {
-            file = "png";
-        } else {
-            String[] split = identifierString.split("\\.");
-            file = split[split.length - 1];
-        }
-        if (variant < 2)
-            return identifierString;
+        if (variant < 2) return identifierString;
+
+        String file = identifierString.endsWith(".png") ? "png" : identifierString.substring(identifierString.lastIndexOf('.') + 1);
+
         if (identifierString.matches("\\D+\\d+\\." + file)) {
             return identifierString.replace("." + file, "." + variant + "." + file);
         }
@@ -138,16 +132,12 @@ public abstract class ETFUtils2 {
     @Nullable
     public static ResourceLocation replaceIdentifier(ResourceLocation id, String regex, String replace) {
         if (id == null) return null;
-        ResourceLocation forReturn;
         try {
-            forReturn = ETFUtils2.res(id.getNamespace(), id.getPath().replaceFirst(regex, replace));
+            return ETFUtils2.res(id.getNamespace(), id.getPath().replaceFirst(regex, replace));
         } catch (ResourceLocationException idFail) {
             ETFUtils2.logError(ETF.getTextFromTranslation("config.entity_texture_features.illegal_path_recommendation").getString() + "\n" + idFail);
-            forReturn = null;
-        } catch (Exception e) {
-            forReturn = null;
-        }
-        return forReturn;
+        } catch (Exception ignored) {}
+        return null;
     }
 
     @Nullable
@@ -155,66 +145,31 @@ public abstract class ETFUtils2 {
         ArrayList<String> packNames = new ArrayList<>(Arrays.asList(packNameList));
         //loop through and remove the one from the lowest pack of the first 2 entries
         //this iterates over the whole array
-        while (packNames.size() >= 2) {
-            if (ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER.indexOf(packNames.get(0)) >= ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER.indexOf(packNames.get(1))) {
-                packNames.remove(1);
-            } else {
-                packNames.remove(0);
-            }
+        final ArrayList<String> knownResourcepackOrder = ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER;
+        while (packNames.size() > 1) {
+            packNames.remove(knownResourcepackOrder.indexOf(packNames.get(0)) >= knownResourcepackOrder.indexOf(packNames.get(1)) ? 1 : 0);
         }
         //here the array is down to 1 entry which should be the one in the highest pack
         return packNames.get(0);
     }
 
     @Nullable
-    public static String returnNameOfHighestPackFromTheseTwo(String pack1, String pack2) {
+    public static String returnNameOfHighestPackFromTheseTwo(@Nullable String pack1, @Nullable String pack2) {
         if (pack1 == null) return null;
+        if (pack1.equals(pack2) || pack2 == null) return pack1;
 
-        if (pack1.equals(pack2)) {
-            return pack1;
-        }
-        if (ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER.indexOf(pack1)
-                >= ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER.indexOf(pack2)) {
-            return pack1;
-        } else {
-            return pack2;
-        }
+        return ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER.indexOf(pack1) >= ETFManager.getInstance().KNOWN_RESOURCEPACK_ORDER.indexOf(pack2) ? pack1 : pack2;
     }
-
-//    @SuppressWarnings("BooleanMethodIsAlwaysInverted") //makes more logical sense
-//    public static boolean isNativeImageEmpty(@NotNull NativeImage image) {
-//        boolean foundNonEmptyPixel = false;
-//        for (int x = 0; x < image.getWidth(); x++) {
-//            for (int y = 0; y < image.getHeight(); y++) {
-//                if (image.getColor(x, y) != 0) {
-//                    foundNonEmptyPixel = true;
-//                    break;
-//                }
-//            }
-//            if (foundNonEmptyPixel) break;
-//        }
-//        return !foundNonEmptyPixel;
-//    }
 
     @Nullable
     public static Properties readAndReturnPropertiesElseNull(ResourceLocation path) {
         Properties props = new Properties();
-        try {
-            @SuppressWarnings("OptionalGetWithoutIsPresent") //try catch is intended
-            Resource resource = Minecraft.getInstance().getResourceManager().getResource(path).get();
-            try {
-                InputStream in = resource.open();
-                props.load(in);
-                in.close();
-                return props;
-            } catch (Exception e) {
-                //resource.close();
-                return null;
-            }
+        try (InputStream in = Minecraft.getInstance().getResourceManager().getResource(path).get().open()) {
+            props.load(in);
+            return props;
         } catch (Exception e) {
             return null;
         }
-
     }
 
     @Nullable
@@ -224,44 +179,29 @@ public abstract class ETFUtils2 {
             var resources = Minecraft.getInstance().getResourceManager().getResourceStack(path);
             for (Resource resource : resources) {
                 if (resource == null) continue;
-                Properties prop = new Properties();
-                try {
-                    InputStream in = resource.open();
+                try (InputStream in = resource.open()) {
+                    Properties prop = new Properties();
                     prop.load(in);
-                    in.close();
                     if (!prop.isEmpty()) {
                         props.add(prop);
                     }
                 } catch (Exception ignored) {}
             }
-            if (!props.isEmpty()) {
-                return props;
-            }
-        } catch (Exception ignored) {}
-        return null;
+            return props.isEmpty() ? null : props;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static NativeImage getNativeImageElseNull(@Nullable ResourceLocation identifier) {
-//        if (identifier != null) {
-//            NativeImage image = ETFManager.getInstance().KNOWN_NATIVE_IMAGES.get(identifier);
-//            if (image != null) {
-//                return image;
-//            }
-//        }
-        NativeImage img;
+
         try {
             //try catch is intended
             Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(identifier);
             if (resource.isPresent()) {
-                InputStream in = resource.get().open();
-                try {
-                    img = NativeImage.read(in);
-                    in.close();
-//                    ETFManager.getInstance().KNOWN_NATIVE_IMAGES.put(identifier, img);
-                    return img;
+                try (InputStream in = resource.get().open()) {
+                    return NativeImage.read(in);
                 } catch (Exception e) {
-                    //resource.close();
-                    in.close();
                     return null;
                 }
             } else {
@@ -278,7 +218,6 @@ public abstract class ETFUtils2 {
         } catch (Exception e) {
             return null;
         }
-
     }
 
     //improvements to logging by @Maximum#8760

@@ -365,7 +365,7 @@ public final class ETFConfig extends TConfig {
 
     @Override
     public ResourceLocation getModIcon() {
-        return ETFUtils2.res(MOD_ID, "textures/gui/icon.png");
+        return ETFUtils2.res(MOD_ID, "textures/gui/etf.png");
     }
 
     public enum OverrideBooleanType {

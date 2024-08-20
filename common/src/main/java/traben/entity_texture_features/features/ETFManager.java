@@ -42,26 +42,20 @@ public class ETFManager {
     public final ObjectOpenHashSet<String> EMISSIVE_SUFFIX_LIST = new ObjectOpenHashSet<>();
     public final ETFLruCache<UUID, ETFPlayerTexture> PLAYER_TEXTURE_MAP = new ETFLruCache<>();
     public final ArrayList<String> KNOWN_RESOURCEPACK_ORDER = new ArrayList<>();
-
     public final ObjectOpenHashSet<EntityType<?>> ENTITY_TYPE_IGNORE_PARTICLES = new ObjectOpenHashSet<>();
-
     //this is a cache of all known ETFTexture versions of any existing resource-pack texture, used to prevent remaking objects
     public final Object2ReferenceOpenHashMap<@NotNull ResourceLocation, @Nullable ETFTexture> ETF_TEXTURE_CACHE = new Object2ReferenceOpenHashMap<>();
     public final EntityIntLRU LAST_SUFFIX_OF_ENTITY = new EntityIntLRU();
     public final EntityIntLRU LAST_RULE_INDEX_OF_ENTITY = new EntityIntLRU();
     public final Object2ReferenceOpenHashMap<@NotNull ResourceLocation, @NotNull ETFDirectory> ETF_DIRECTORY_CACHE = new Object2ReferenceOpenHashMap<>();// = new Object2ReferenceOpenHashMap<>();
-    //    public final ETFLruCache<Identifier, NativeImage> KNOWN_NATIVE_IMAGES = new ETFLruCache<>();
     private final Object2ObjectOpenHashMap<ResourceLocation, ETFTextureVariator> VARIATOR_MAP = new Object2ObjectOpenHashMap<>();
     public UUID ENTITY_DEBUG = null;
     public Boolean mooshroomBrownCustomShroomExists = null;
-    //marks whether mooshroom mushroom overrides exist
     public Boolean mooshroomRedCustomShroomExists = null;
     public ETFTexture redMooshroomAlt = null;
     public ETFTexture brownMooshroomAlt = null;
 
     private ETFManager() {
-
-
         for (PackResources pack :
                 Minecraft.getInstance().getResourceManager().listPacks().toList()) {
             KNOWN_RESOURCEPACK_ORDER.add(pack.packId());
@@ -79,13 +73,10 @@ public class ETFManager {
             for (Properties prop :
                     props) {
                 //not an optifine property that I know of but this has come up in a few packs, so I am supporting it
-                if (prop.containsKey("entities.suffix.emissive")) {
-                    if (prop.getProperty("entities.suffix.emissive") != null)
-                        EMISSIVE_SUFFIX_LIST.add(prop.getProperty("entities.suffix.emissive"));
-                }
-                if (prop.containsKey("suffix.emissive")) {
-                    if (prop.getProperty("suffix.emissive") != null)
-                        EMISSIVE_SUFFIX_LIST.add(prop.getProperty("suffix.emissive"));
+                String[] keys = {"entities.suffix.emissive", "suffix.emissive"};
+                for (String key : keys) {
+                    String value = prop.getProperty(key);
+                    if (value != null) EMISSIVE_SUFFIX_LIST.add(value);
                 }
             }
             if (ETF.config().getConfig().alwaysCheckVanillaEmissiveSuffix) {
@@ -272,20 +263,7 @@ public class ETFManager {
 
     @NotNull
     private ETFTexture getOrCreateETFTexture(ResourceLocation ofIdentifier) {
-        if (ETF_TEXTURE_CACHE.containsKey(ofIdentifier)) {
-            //use cached ETFTexture
-            ETFTexture cached = ETF_TEXTURE_CACHE.get(ofIdentifier);
-            if (cached != null) {
-                return cached;
-            }
-        } else {
-            //create new ETFTexture and cache it
-            ETFTexture newTexture = new ETFTexture(ofIdentifier);
-            ETF_TEXTURE_CACHE.put(ofIdentifier, newTexture);
-            return newTexture;
-        }
-        ETFUtils2.logError("getOrCreateETFTexture reached the end and should not have");
-        return ETF_ERROR_TEXTURE;
+        return ETF_TEXTURE_CACHE.computeIfAbsent(ofIdentifier, (k)-> new ETFTexture((ResourceLocation) k));
     }
 
     @Nullable
@@ -304,18 +282,14 @@ public class ETFManager {
                     return null;
                 } else if (possibleSkin.isCorrectObjectForThisSkin(rendererGivenSkin)
                         || Minecraft.getInstance().screen instanceof ETFConfigScreenSkinTool) {
-                    //ETFRenderContext.preventRenderLayerTextureModify();
                     return possibleSkin;
                 }
-
             }
-            PLAYER_TEXTURE_MAP.put(id, null);
+            PLAYER_TEXTURE_MAP.put(id, null);//incase of crash
             ETFPlayerTexture etfPlayerTexture = new ETFPlayerTexture(player, rendererGivenSkin);
             PLAYER_TEXTURE_MAP.put(id, etfPlayerTexture);
-            //ETFRenderContext.preventRenderLayerTextureModify();
             return etfPlayerTexture;
         } catch (Exception e) {
-//            e.printStackTrace();
             return null;
         }
     }

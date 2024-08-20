@@ -13,24 +13,18 @@ public abstract class FloatRangeFromStringArrayProperty extends NumberRangeFromS
     @Override
     protected @Nullable RangeTester<Float> getRangeTesterFromString(String possibleRange) {
         try {
-            if (possibleRange.matches("([\\d.]+|-[\\d.]+)-([\\d.]+|-[\\d.]+)")) {
-                String[] str = possibleRange.split("(?<!^|-)-");
-                float left = Float.parseFloat(str[0].replaceAll("[^0-9.-]", ""));
-                float right = Float.parseFloat(str[1].replaceAll("[^0-9.-]", ""));
-                if (left == right) {
-                    return (value) -> value == left;
-                } else if (right > left) {
-                    return (value) -> value >= left && value <= right;
-                } else {
-                    return (value) -> value >= right && value <= left;
-                }
+            String[] str = possibleRange.split("(?<!^|-)-");
+            float left = Float.parseFloat(str[0].replaceAll("[^0-9.-]", ""));
+            float right = str.length > 1 ? Float.parseFloat(str[1].replaceAll("[^0-9.-]", "")) : left;
+
+            if (left == right) {
+                return (value) -> value == left;
+            } else if (right > left) {
+                return (value) -> value >= left && value <= right;
             } else {
-                float single = Float.parseFloat(possibleRange.replaceAll("[^0-9.-]", ""));
-                return (value) -> value == single;
+                return (value) -> value >= right && value <= left;
             }
         } catch (Exception ignored) {
-            //System.out.println(possibleRange + "failed ");
-            //ignored.printStackTrace();
             ETFUtils2.logError("number or range in [" + getPropertyId() + "] property could not be extracted from input: " + possibleRange);
         }
         return null;

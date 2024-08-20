@@ -97,46 +97,32 @@ public class TConfigEntryCategory extends TConfigEntry {
     }
 
     public TConfigEntryCategory addAll(final Collection<TConfigEntry> option) {
-        if (option == null) return this;
-        for (TConfigEntry tConfigEntry : option) {
-            add(tConfigEntry);
+        if (option != null) {
+            option.forEach(this::add);
         }
         return this;
     }
 
     public TConfigEntryCategory add(final TConfigEntry option) {
-        if (option == null) {
-            return this;
-        }
-        if (option instanceof TConfigEntryCategory category) {
-            return addOrMerge(category);
-        }
+        if (option == null) return this;
+        if (option instanceof TConfigEntryCategory category) return addOrMerge(category);
         options.put(option.getText().getString(), option);
         return this;
     }
 
     private TConfigEntryCategory addOrMerge(final TConfigEntryCategory category) {
-        if (options.containsKey(category.getText().getString())
-                && options.get(category.getText().getString()) instanceof TConfigEntryCategory existingCategory) {
-            for (TConfigEntry option : category.options.values()) {
-                existingCategory.add(option);
-            }
+        String categoryKey = category.getText().getString();
+        if (options.containsKey(categoryKey) && options.get(categoryKey) instanceof TConfigEntryCategory existingCategory) {
+            category.options.values().forEach(existingCategory::add);
         } else {
-            options.put(category.getText().getString(), category);
+            options.put(categoryKey, category);
         }
         return this;
     }
 
     @Override
     boolean hasChangedFromInitial() {
-        boolean changed = false;
-        for (TConfigEntry value : options.values()) {
-            if (value.hasChangedFromInitial()) {
-                changed = true;
-                break;
-            }
-        }
-        return changed;
+        return options.values().stream().anyMatch(TConfigEntry::hasChangedFromInitial);
     }
 
     public TConfigEntryCategory setEmptyTooltip(@NotNull @Translatable final String emptyTooltipKey) {

@@ -71,7 +71,7 @@ public class RandomProperties {
                 RandomPropertyFactory.of("nbt", "config.entity_texture_features.property_explanation.nbt", NBTProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("professions", "config.entity_texture_features.property_explanation.profession", ProfessionProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("sizes", "config.entity_texture_features.property_explanation.size", SizeProperty::getPropertyOrNull),
-                RandomPropertyFactory.of("dayTime", "config.entity_texture_features.property_explanation.day_time", TimeOfDayProperty::getPropertyOrNull, true),
+                RandomPropertyFactory.of("dayTime", "config.entity_texture_features.property_explanation.day_time", TimeOfDayProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("weather", "config.entity_texture_features.property_explanation.weather", WeatherProperty::getPropertyOrNull, true)
         );
     }
