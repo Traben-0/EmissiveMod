@@ -3,8 +3,6 @@
 - random suffix selection now completely matches what optifine users will randomly get
 - the `pattern:` wildcard `?` has been changed to the equivalent of `.` in regex whereas it was incorrectly documented as being `.+`
 
-
-
 [6.2]
 - forge 1.21 & 1.20.6 fixed
 - changed gui icon
