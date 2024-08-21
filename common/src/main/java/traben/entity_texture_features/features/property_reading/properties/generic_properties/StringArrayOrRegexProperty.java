@@ -62,7 +62,8 @@ public abstract class StringArrayOrRegexProperty extends RandomProperty {
             return (string) -> invert != string.matches(ignoreCase ? "(?i)" + finalStringToMatch : finalStringToMatch);
         }else if (stringToMatch.startsWith("pattern:") || stringToMatch.startsWith("ipattern:")) {
             final boolean ignoreCase = stringToMatch.startsWith("i");
-            stringToMatch = stringToMatch.replaceFirst("ipattern:|pattern:", "").replace("*", "\\E.*\\Q").replace("?", "\\E.+\\Q");
+            //todo faster way to do this
+            stringToMatch = stringToMatch.replaceFirst("ipattern:|pattern:", "").replace("*", "\\E.*\\Q").replace("?", "\\E.\\Q");
             final String finalStringToMatch = "\\Q" + stringToMatch + "\\E";
             return (string) -> invert != string.matches(ignoreCase ? "(?i)" + finalStringToMatch : finalStringToMatch);
         } else {//direct comparison

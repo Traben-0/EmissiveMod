@@ -29,7 +29,10 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
     protected final EntityBooleanLRU entityCanUpdate = new EntityBooleanLRU(1000);
 
     protected final @NotNull String packname;
-    protected EntityRandomSeedFunction entityRandomSeedFunction = (entity) -> entity.etf$getUuid().hashCode();
+    protected EntityRandomSeedFunction entityRandomSeedFunction = (entity) -> (int) (entity.etf$getUuid().getLeastSignificantBits() & 0x7FFFFFFFL);
+        //entity.etf$getUuid().hashCode();
+
+
     protected BiConsumer<ETFEntity, @Nullable RandomPropertyRule> onMeetsRule = (entity, rule) -> {
     };
 
@@ -86,6 +89,20 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
         //set so only 1 of each
         List<Integer> numbersList = getCaseNumbers(propIds);
         Collections.sort(numbersList);
+
+        //send log message if skipping rule numbers
+        int last = 0;
+        for (Integer i : numbersList) {
+            if (i >= last + 10){
+                last = -1;
+                break;
+            }
+            last = i;
+        }
+        if (last == -1) {
+            ETFUtils2.logWarn("Properties file ["+propertiesFilePath+"] has skipped rule numbers with intervals larger than 10, this is fine in ETF but breaks in OptiFine.", false);
+        }
+
         List<RandomPropertyRule> allRulesOfProperty = new ArrayList<>();
         for (Integer ruleNumber :
                 numbersList) {

@@ -10,7 +10,9 @@ import java.util.*;
 public class RandomPropertyRule {
     public final int RULE_NUMBER;
     public final String PROPERTY_FILE;
-    private final Integer[] SUFFIX_NUMBERS_WEIGHTED;
+    private final Integer[] SUFFIX_NUMBERS;
+    private final Integer[] WEIGHTS;
+    private final int WEIGHT_TOTAL;
     private final RandomProperty[] PROPERTIES_TO_TEST;
     private final boolean RULE_ALWAYS_APPROVED;
     private final boolean UPDATES;
@@ -30,10 +32,12 @@ public class RandomPropertyRule {
     private RandomPropertyRule(){
         RULE_NUMBER = 0;//used for rule matching settings
         PROPERTY_FILE = "default setter";
-        SUFFIX_NUMBERS_WEIGHTED = new Integer[]{1};
+        SUFFIX_NUMBERS = new Integer[]{1};
         PROPERTIES_TO_TEST = new RandomProperty[]{};
         RULE_ALWAYS_APPROVED = true;
         UPDATES = false;
+        WEIGHTS = null;
+        WEIGHT_TOTAL = 0;
     }
 
     public boolean isAlwaysMet(){
@@ -54,28 +58,49 @@ public class RandomPropertyRule {
         PROPERTIES_TO_TEST = properties;
         RULE_ALWAYS_APPROVED = properties.length == 0;
 
+
+        SUFFIX_NUMBERS = suffixes;
+
         if (weights == null || weights.length == 0) {
-            SUFFIX_NUMBERS_WEIGHTED = suffixes;
-        } else if (weights.length == suffixes.length) {
-            List<Integer> weightedSuffixArray = new ArrayList<>();
-            for (int i = 0; i < suffixes.length; i++) {
-                int suffixValue = suffixes[i];
-                int weightValue = weights[i];
-                for (int j = 0; j < weightValue; j++) {
-                    weightedSuffixArray.add(suffixValue);
+            WEIGHTS = null;
+            WEIGHT_TOTAL = 0;
+        } else /*if (weights.length == suffixes.length)*/ {
+
+            if(weights.length != suffixes.length) {
+                Integer[] weightsFinal = new Integer[suffixes.length];
+                int smaller = Math.min(weights.length, suffixes.length);
+                System.arraycopy(weights, 0, weightsFinal, 0, smaller);
+
+                if (weights.length >= suffixes.length) {
+                    ETFUtils2.logWarn("Random Property file [" + PROPERTY_FILE + "] rule # [" + RULE_NUMBER + "] has more weights than suffixes, trimming to match");
+                } else {
+                    ETFUtils2.logWarn("Random Property file [" + PROPERTY_FILE + "] rule # [" + RULE_NUMBER + "] has more suffixes than weights, expanding to match");
+                    int avgWeight = Arrays.stream(weights).mapToInt(Integer::intValue).sum() / weights.length;
+                    for (int i = weights.length; i < weightsFinal.length; i++) {
+                        weightsFinal[i] = avgWeight;
+                    }
                 }
+                weights = weightsFinal;
             }
-            SUFFIX_NUMBERS_WEIGHTED = weightedSuffixArray.toArray(new Integer[0]);
-        } else {
-            ETFUtils2.logWarn("random texture weights don't match for [" +
-                    PROPERTY_FILE + "] rule # [" + RULE_NUMBER + "] :\n suffixes: " + Arrays.toString(suffixes) + "\n weights: " + Arrays.toString(weights), false);
-            SUFFIX_NUMBERS_WEIGHTED = suffixes;
+
+            int total = 0;
+            WEIGHTS = new Integer[weights.length];
+            for (int i = 0; i < weights.length; i++) {
+                Integer weight = weights[i];
+                if (weight < 0) {
+                    total = 0;
+                    break;
+                }
+                total += weight;
+                WEIGHTS[i] = total;
+            }
+            WEIGHT_TOTAL = total;
         }
         UPDATES = Arrays.stream(properties).anyMatch(RandomProperty::canPropertyUpdate);
     }
 
     public Set<Integer> getSuffixSet() {
-        return new HashSet<>(List.of(SUFFIX_NUMBERS_WEIGHTED));
+        return new HashSet<>(List.of(SUFFIX_NUMBERS));
     }
 
     public boolean doesEntityMeetConditionsOfThisCase(ETFEntity etfEntity, boolean isUpdate, EntityBooleanLRU UUID_CaseHasUpdateablesCustom) {
@@ -99,7 +124,20 @@ public class RandomPropertyRule {
     }
 
     public int getVariantSuffixFromThisCase(int seed) {
-        return SUFFIX_NUMBERS_WEIGHTED[Math.abs(seed) % SUFFIX_NUMBERS_WEIGHTED.length];
+
+        if (WEIGHT_TOTAL == 0){
+            return SUFFIX_NUMBERS[Math.abs(seed) % SUFFIX_NUMBERS.length];
+        }else{
+            int seedValue = Math.abs(seed) % WEIGHT_TOTAL;
+            for (int i = 0; i < WEIGHTS.length; i++) {
+                if (seedValue < WEIGHTS[i]) {
+                    return SUFFIX_NUMBERS[i];
+                }
+            }
+            return 0;
+        }
+
+        //return SUFFIX_NUMBERS[Math.abs(seed) % SUFFIX_NUMBERS.length];
     }
 
     public void cacheEntityInitialResultsOfNonUpdatingProperties(ETFEntity entity) {
