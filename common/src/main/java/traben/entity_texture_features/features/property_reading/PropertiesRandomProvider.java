@@ -3,7 +3,9 @@ package traben.entity_texture_features.features.property_reading;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import traben.entity_texture_features.ETF;
 import traben.entity_texture_features.ETFApi;
+import traben.entity_texture_features.ETFException;
 import traben.entity_texture_features.features.ETFManager;
 import traben.entity_texture_features.features.ETFRenderContext;
 import traben.entity_texture_features.features.property_reading.properties.RandomProperties;
@@ -91,16 +93,22 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
         Collections.sort(numbersList);
 
         //send log message if skipping rule numbers
+
         int last = 0;
         for (Integer i : numbersList) {
-            if (i >= last + 10){
+            if (i >= last + 10) {
                 last = -1;
                 break;
             }
             last = i;
         }
         if (last == -1) {
-            ETFUtils2.logWarn("Properties file ["+propertiesFilePath+"] has skipped rule numbers with intervals larger than 10, this is fine in ETF but breaks in OptiFine.", false);
+           if (ETF.config().getConfig().optifine_limitRandomVariantGapsBy10) {
+                ETFUtils2.logError("Properties file [" + propertiesFilePath + "] has skipped rule numbers by values greater than 10, this is invalid in OptiFine. This limitation can be disabled in ETF's settings, but will make your pack incompatible with OptiFine.", false);
+                throw new ETFException("Properties file [" + propertiesFilePath + "] has skipped rule numbers by values greater than 10, this is invalid in OptiFine. This limitation can be disabled in ETF's settings, but will make your pack incompatible with OptiFine.");
+            }else{
+                ETFUtils2.logWarn("Properties file [" + propertiesFilePath + "] has skipped rule numbers by values greater than 10, this is invalid in OptiFine. This limitation has been disabled in ETF's settings, your pack is incompatible with OptiFine.", false);
+            }
         }
 
         List<RandomPropertyRule> allRulesOfProperty = new ArrayList<>();
@@ -156,7 +164,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
         if (suffixes != null) {
             for (Integer suffix : suffixes) {
                 if (suffix < 1) {
-                    throw new Exception("Invalid suffix: [" + suffix + "] in " + Arrays.toString(suffixes));
+                    throw new ETFException("Invalid suffix: [" + suffix + "] in " + Arrays.toString(suffixes));
                 }
             }
         }
