@@ -67,7 +67,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
             }
 
             //assure default return always present
-            if (!propertyRules.get(propertyRules.size()-1).isAlwaysMet()){
+            if (!propertyRules.get(propertyRules.size() - 1).isAlwaysMet()) {
                 propertyRules.add(RandomPropertyRule.defaultReturn);
             }
 
@@ -79,21 +79,33 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
                     && properties.equals(ETFUtils2.returnNameOfHighestPackFromTheseTwo(properties, vanillaPack))) {
                 return new PropertiesRandomProvider(propertiesFileIdentifier, propertyRules);
             }
-        } catch (Exception e) {
-            ETFUtils2.logWarn("Ignoring properties file that caused Exception @ " + propertiesFileIdentifier + "\n" + e, false);
+        }catch (ETFException etf){
+            ETFUtils2.logWarn("Ignoring properties file with problem: " + propertiesFileIdentifier + "\n" + etf, false);
+        }catch (Exception e) {
+            ETFUtils2.logWarn("Ignoring properties file that caused unexpected Exception: " + propertiesFileIdentifier + "\n" + e, false);
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<RandomPropertyRule> getAllValidPropertyObjects(Properties properties, ResourceLocation propertiesFilePath, String... suffixToTest) throws Exception {
+    public static List<RandomPropertyRule> getAllValidPropertyObjects(Properties properties, ResourceLocation propertiesFilePath, String... suffixToTest) throws ETFException {
         Set<String> propIds = properties.stringPropertyNames();
         //set so only 1 of each
         List<Integer> numbersList = getCaseNumbers(propIds);
         Collections.sort(numbersList);
 
-        //send log message if skipping rule numbers
+        if (numbersList.isEmpty()) {
+            ETFUtils2.logWarn("Properties file [" + propertiesFilePath + "] contains no rules, this is invalid.", false);
+            throw new ETFException("Properties file [" + propertiesFilePath + "] contains no rules, this is invalid.");
+        }
 
+        if(numbersList.get(0) < 1){
+            ETFUtils2.logWarn("Properties file [" + propertiesFilePath + "] contains rule numbers less than 1, this is invalid.", false);
+            throw new ETFException("Properties file [" + propertiesFilePath + "] contains rule numbers less than 1, this is invalid.");
+        }
+
+        //send log message if skipping rule numbers
         int last = 0;
         for (Integer i : numbersList) {
             if (i >= last + 10) {
@@ -158,7 +170,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
     }
 
     @Nullable
-    private static Integer[] getSuffixes(Properties props, int num, String... suffixToTest) throws Exception {
+    private static Integer[] getSuffixes(Properties props, int num, String... suffixToTest) throws ETFException {
         var suffixes = SimpleIntegerArrayProperty.getGenericIntegerSplitWithRanges(props, num, suffixToTest);
         //throw if it contains 0 or negatives
         if (suffixes != null) {
@@ -182,7 +194,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
             this.onMeetsRule = onMeetsRule;
     }
 
-    public @NotNull String getPackName() {
+    public @NotNull String getPackName() {//todo check not used by EMF or ESF
         return packname;
     }
 
