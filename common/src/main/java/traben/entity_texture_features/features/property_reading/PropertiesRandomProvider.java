@@ -29,7 +29,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
     protected final EntityBooleanLRU entityCanUpdate = new EntityBooleanLRU(1000);
 
     protected final @NotNull String packname;
-    protected EntityRandomSeedFunction entityRandomSeedFunction = (entity) -> (int) (entity.etf$getUuid().getLeastSignificantBits() & 0x7FFFFFFFL);
+    protected EntityRandomSeedFunction entityRandomSeedFunction = ETFEntity::etf$getOptifineId;
         //entity.etf$getUuid().hashCode();
 
 
