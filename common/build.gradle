@@ -26,18 +26,9 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
-    if (mc_build == 5 || mc_build == 3 || mc_build == 6) {
-        //todo does 1.20.1 build need seperate version just for referencing 3 files?
-        //todo future versions wont need seperate dh beta for dual renamed classes support
-        modImplementation files("build/iris-1.7.0-snapshot+mc1.20.4-dfec34d-dirty.jar")
-    }
 
     modImplementation("maven.modrinth:immediatelyfast:${project.immediatelyfast_version}") {
         exclude(group: "net.fabricmc.fabric-api")
-    }
-    //immedeatelyfast renamed the mixin target class in v1.2.16 for now keep support for both but drop eventually
-    if (mc_build >= 2 && mc_build <= 7) {
-        modImplementation files("build/ImmediatelyFast-Fabric-1.2.15+1.20.6.jar")
     }
 }
 

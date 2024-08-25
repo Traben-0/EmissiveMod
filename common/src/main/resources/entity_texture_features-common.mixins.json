@@ -36,7 +36,6 @@
     "entity.renderer.feature.MixinMooshroomMushroomFeatureRenderer",
     "entity.renderer.feature.MixinShoulderParrotFeatureRenderer",
     "entity.renderer.feature.MixinWardenFeatureRenderer",
-    "mods.imediatelyfast.MixinBatchableImmediate_old",
     "mods.iris.old.MixinFullyBufferedMultiBufferSource",
     "mods.iris.old.MixinInnerWrappedRenderType",
     "mods.iris.old.MixinOuterWrappedRenderType",

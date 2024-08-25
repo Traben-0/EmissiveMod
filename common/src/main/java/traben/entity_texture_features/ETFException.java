@@ -15,11 +15,9 @@ public class ETFException extends RuntimeException {
                 ----------------------
                 ETF context:
                  - Entity = %s
-                 - Special render overlay phase = %s
-                 - Render layer modify = %s
+                 - EMF installed = %s
                 ----------------------
                 """.formatted(entity == null ? "null" : entity.etf$isBlockEntity() ? ((BlockEntity)entity).getType() : entity.etf$getType(),
-                ETFRenderContext.isIsInSpecialRenderOverlayPhase(),
-                ETFRenderContext.isAllowedToRenderLayerTextureModify());
+                ETFVersionDifferenceManager.isThisModLoaded("entity_model_features"));
     }
 }
