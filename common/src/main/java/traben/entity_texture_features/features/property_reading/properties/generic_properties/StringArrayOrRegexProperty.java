@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.features.property_reading.properties.RandomProperty;
 import traben.entity_texture_features.utils.ETFEntity;
+import traben.entity_texture_features.utils.ETFUtils2;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -17,19 +18,25 @@ public abstract class StringArrayOrRegexProperty extends RandomProperty {
     protected final RegexAndPatternPropertyMatcher MATCHER;
 
     protected final boolean usesRegex;
+    protected final boolean doPrint;
 
 
-    protected StringArrayOrRegexProperty(String string) throws RandomPropertyException {
-        ORIGINAL_INPUT = string;
-        if (string == null || string.isBlank())
+    protected StringArrayOrRegexProperty(String stringInput) throws RandomPropertyException {
+        if (stringInput == null || stringInput.isBlank())
             throw new RandomPropertyException(getPropertyId() + " property was broken");
-        if (string.startsWith("regex:") || string.startsWith("pattern:")
-                || string.startsWith("iregex:") || string.startsWith("ipattern:")) {
-            MATCHER = getStringMatcher_Regex_Pattern_List_Single(string);
-            ARRAY = ObjectOpenHashSet.of(string);
+
+        ORIGINAL_INPUT = stringInput;
+        doPrint = stringInput.startsWith("print:");
+
+        String testString = doPrint ? stringInput.substring(6) : stringInput;
+
+        if (testString.startsWith("regex:") || testString.startsWith("pattern:")
+                || testString.startsWith("iregex:") || testString.startsWith("ipattern:")) {
+            MATCHER = getStringMatcher_Regex_Pattern_List_Single(testString);
+            ARRAY = ObjectOpenHashSet.of(testString);
             usesRegex = true;
         } else {
-            String[] array = string.trim().split("\\s+");
+            String[] array = testString.trim().split("\\s+");
 
             if (array.length == 0)
                 throw new RandomPropertyException(getPropertyId() + " property was broken");
@@ -41,7 +48,7 @@ public abstract class StringArrayOrRegexProperty extends RandomProperty {
             }
             //add the entire text as well just incase spaced names were expected
             if (array.length != 1) {
-                ARRAY.add(string.trim());
+                ARRAY.add(testString.trim());
             }
             MATCHER = this::testArray;
             usesRegex = false;
@@ -105,8 +112,11 @@ public abstract class StringArrayOrRegexProperty extends RandomProperty {
     public boolean testEntityInternal(ETFEntity entity) {
         String entityString = getValueFromEntity(entity);
         if (entityString != null) {
-            return MATCHER.testString(shouldForceLowerCaseCheck() ? entityString.toLowerCase() : entityString);
+            boolean test = MATCHER.testString(shouldForceLowerCaseCheck() ? entityString.toLowerCase() : entityString);
+            if (doPrint) ETFUtils2.logMessage(getPropertyId() + " property value print: [" + entityString + "], returned: " + test + ", can update: " + canPropertyUpdate());
+            return test;
         }
+        if (doPrint) ETFUtils2.logMessage(getPropertyId()+" property value print: [<null>], returned: false, can update: " + canPropertyUpdate());
         return false;
     }
 

@@ -1,7 +1,12 @@
 [**ETF Changelog:**]
 
+- fixed a bug where non updating properties, e.g. `biomes`, would not test correctly
+- added an OptiFine parity settings category and a few options to control matching OptiFine restrictions or weirdness
 - random suffix selection now completely matches what optifine users will randomly get
+- added `print:` debug functionality to all string list and regex properties to log the given value when tested
+- added `print:` debug functionality to most numeric properties to log the given value when tested
 - the `pattern:` wildcard `?` has been changed to the equivalent of `.` in regex whereas it was incorrectly documented as being `.+`
+- removed old mod compatibility files for older versions of `iris`, `sodium`, and `immediatelyfast`, that were kept for a time to retain compatibility, as long as you use the latest version for your given MC version you will be fine
 
 [6.2]
 - forge 1.21 & 1.20.6 fixed

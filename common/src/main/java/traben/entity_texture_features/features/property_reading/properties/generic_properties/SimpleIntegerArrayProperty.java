@@ -27,7 +27,6 @@ public abstract class SimpleIntegerArrayProperty extends RandomProperty {
     private final IntOpenHashSet ARRAY;
 
     protected SimpleIntegerArrayProperty(Integer[] array) throws RandomPropertyException {
-
         if (array == null || array.length == 0)
             throw new RandomPropertyException(getPropertyId() + " property was broken");
         ARRAY = new IntOpenHashSet(List.of(array));

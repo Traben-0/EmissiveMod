@@ -250,7 +250,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
 
     private int testEntityAgainstRules(final ETFEntity entityToBeTested) {
         for (RandomPropertyRule rule : propertyRules) {
-            if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, true, entityCanUpdate)) {
+            if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, entityCanUpdate.containsKey(entityToBeTested.etf$getUuid()), entityCanUpdate)) {
                 onMeetsRule.accept(entityToBeTested, rule);
                 return rule.getVariantSuffixFromThisCase(entityRandomSeedFunction.toInt(entityToBeTested));
             }
