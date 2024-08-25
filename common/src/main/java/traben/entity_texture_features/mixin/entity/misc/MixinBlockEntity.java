@@ -10,8 +10,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.entity.BedBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.Nullable;
@@ -59,12 +62,40 @@ public abstract class MixinBlockEntity implements ETFEntity {
     }
 
     @Override
+    public int etf$getOptifineId() {
+        BlockPos pos = etf$getBlockPos();
+        //optifine matching id
+        int hash = etf$optifineHashing(37);
+        hash = etf$optifineHashing(hash + pos.getX());
+        hash = etf$optifineHashing(hash + pos.getZ());
+        return etf$optifineHashing(hash + pos.getY());
+    }
+
+    @Unique
+    private static int etf$optifineHashing(int x) {
+        //Optifine integer hashing algorithm used by block entity uuid matching
+        x ^= 0x3D ^ x >> 16;
+        x += x << 3;
+        x ^= x >> 4;
+        x *= 668265261;
+        x ^= x >> 15;
+        return x;
+    }
+
+    @Override
     public Level etf$getWorld() {
         return getLevel();
     }
 
     @Override
     public BlockPos etf$getBlockPos() {
+        var self = (BlockEntity) ((Object) this);
+        if(self instanceof BedBlockEntity bed){
+            var state = bed.getBlockState();
+            if(state.getValue(BedBlock.PART) == BedPart.HEAD){
+                return getBlockPos().relative(state.getValue(BedBlock.FACING));
+            }
+        }
         return getBlockPos();
     }
 

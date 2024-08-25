@@ -78,13 +78,6 @@ public abstract class MixinEntity implements ETFEntity {
     @Shadow
     public abstract Vec3 getDeltaMovement();
 
-    @Shadow
-    public abstract boolean saveAsPassenger(final CompoundTag compoundTag);
-
-    @Shadow
-    public abstract CompoundTag saveWithoutId(final CompoundTag compoundTag);
-
-
 
     @Override
     public EntityType<?> etf$getType() {
@@ -94,6 +87,11 @@ public abstract class MixinEntity implements ETFEntity {
     @Override
     public UUID etf$getUuid() {
         return getUUID();
+    }
+
+    @Override
+    public int etf$getOptifineId() {
+        return (int) (etf$getUuid().getLeastSignificantBits() & 0x7FFFFFFFL);
     }
 
     @Override

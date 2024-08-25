@@ -38,6 +38,9 @@ import static traben.entity_texture_features.ETFApi.getBlockEntityTypeToTranslat
 @SuppressWarnings("CanBeFinal")
 public final class ETFConfig extends TConfig {
 
+    public boolean optifine_limitRandomVariantGapsBy10 = true;
+    public boolean optifine_allowWeirdSkipsInTrueRandom = true;
+
     public IllegalPathMode illegalPathSupportMode = IllegalPathMode.None;
     public boolean enableCustomTextures = true;
     public boolean enableCustomBlockEntities = true;
@@ -243,7 +246,15 @@ public final class ETFConfig extends TConfig {
                 new TConfigEntryCategory("config.entity_texture_features.restrict_update_properties2").addAll(
                         getPropertySettings()
                 ),
-                getEntitySettings()
+                getEntitySettings(),
+                new TConfigEntryCategory("config.entity_features.optifine_settings","config.entity_texture_features.optifine.desc").addAll(
+                        TConfigEntryText.fromLongOrMultilineTranslation("config.entity_texture_features.optifine.desc",200, TConfigEntryText.TextAlignment.LEFT)
+                ).add(
+                        new TConfigEntryBoolean("config.entity_texture_features.optifine.variant_gap.title", "config.entity_texture_features.optifine.variant_gap.tooltip",
+                                () -> optifine_limitRandomVariantGapsBy10, aBoolean -> optifine_limitRandomVariantGapsBy10 = aBoolean, true),
+                        new TConfigEntryBoolean("config.entity_texture_features.optifine.random_skips.title", "config.entity_texture_features.optifine.random_skips.tooltip",
+                                () -> optifine_allowWeirdSkipsInTrueRandom, aBoolean -> optifine_allowWeirdSkipsInTrueRandom = aBoolean, true)
+                )
         );
     }
 

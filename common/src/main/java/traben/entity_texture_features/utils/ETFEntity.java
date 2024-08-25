@@ -32,6 +32,8 @@ public interface ETFEntity {
 
     BlockPos etf$getBlockPos();
 
+    int etf$getOptifineId();
+
     int etf$getBlockY();
 
     CompoundTag etf$getNbt();

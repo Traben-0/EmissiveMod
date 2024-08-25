@@ -16,6 +16,7 @@ public class BiomeProperty extends StringArrayOrRegexProperty {
 
     protected BiomeProperty(String data) throws RandomProperty.RandomPropertyException {
         super(data);
+        System.out.println("biomecreate: " + data);
     }
 
     public static BiomeProperty getPropertyOrNull(Properties properties, int propertyNum) {
@@ -25,7 +26,8 @@ public class BiomeProperty extends StringArrayOrRegexProperty {
                 //add entire line as a test
                 return new BiomeProperty(dataFromProperty);
             } else {
-                String[] biomeList = dataFromProperty.split("\\s+");
+                boolean prints = dataFromProperty.startsWith("print:");
+                String[] biomeList = (prints ? dataFromProperty.substring(6) : dataFromProperty).split("\\s+");
 
                 //strip out old format optifine biome names
                 //I could be way more in-depth and make these line up to all variants but this is legacy code
@@ -62,6 +64,7 @@ public class BiomeProperty extends StringArrayOrRegexProperty {
                         }
                     }
                     StringBuilder builder = new StringBuilder();
+                    if (prints) builder.append("print:");
                     for (String str :
                             biomeList) {
                         builder.append(str).append(" ");

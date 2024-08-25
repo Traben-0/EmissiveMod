@@ -14,6 +14,8 @@ fixing this issue already on my discord https://discord.com/invite/rURmwrzUcz in
 
 - What happened? [e.g. crashed, texture is broken]
 - What were you doing when it happened? [e.g. loading the game, playing multiplayer, single-player]
+- Does this issue also occur with OptiFine? [yes/no]
+
 
 **Screenshots**
 
@@ -22,8 +24,10 @@ fixing this issue already on my discord https://discord.com/invite/rURmwrzUcz in
 **Crash log**
 
 - If the issue is a crash you **must** provide a crash log or nothing can be done.
-- If it is not a crash your latest.log is always helpful to diagnose potential issues.
-- https://minecraft.fandom.com/wiki/Tutorials/How_to_get_a_crash_report
+- If it is not a crash your latest.log is always helpful to diagnose potential issues. It might even already tell you what is going on.
+  - How to get your crash log: https://minecrafthopper.net/help/guides/getting-minecraft-crash-report/
+  - How to get your latest game log: https://minecrafthopper.net/help/guides/getting-minecraft-latest-log/
+  - How to make Minecraft always show you your game log: https://minecrafthopper.net/help/guides/getting-minecraft-game-output-log/
 
 **Your setup: (please complete the following information):**
 

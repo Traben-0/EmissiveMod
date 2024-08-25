@@ -1,6 +1,11 @@
 package traben.entity_texture_features.compat;
 
-#if MC == MC_20_1 || MC >= MC_20_4
+#if MC < MC_21 && MC != MC_20_2
+#define ALLOW
+#endif
+
+
+#if ALLOW
 import me.jellysquid.mods.sodium.client.render.vertex.buffer.ExtendedBufferBuilder;
 import traben.entity_texture_features.features.ETFRenderContext;
 import traben.entity_texture_features.utils.ETFUtils2;
@@ -14,7 +19,7 @@ import net.minecraft.client.renderer.RenderType;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
+import traben.entity_texture_features.utils.ETFUtils2;
 
 
 /**
@@ -31,7 +36,7 @@ public abstract class SodiumGetBufferInjector {
     }
 
     private static TriConsumer<MultiBufferSource, RenderType, VertexConsumer> get() {
-        #if MC == MC_20_1 || MC == MC_20_4 || MC == MC_20_6
+        #if ALLOW
         try {
             return new Impl();
             //sodium 0.5.9+ will cause the NoSuchMethodError as the interface ExtendedBufferBuilder has changed to no longer need that
@@ -43,7 +48,7 @@ public abstract class SodiumGetBufferInjector {
         #endif
         return null;
     }
-#if MC == MC_20_1 || MC == MC_20_4 || MC == MC_20_6
+#if ALLOW
     private static class Impl implements TriConsumer<MultiBufferSource, RenderType, VertexConsumer> {
         Impl() {
             Objects.requireNonNull(ExtendedBufferBuilder.class);

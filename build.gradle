@@ -69,15 +69,10 @@ subprojects {
 
         //https://github.com/manifold-systems/manifold/tree/master/manifold-deps-parent/manifold-preprocessor#setup
 
-        //no idea why this breaks with those versions
-//        //todo just only use older build?
-//        if (rootProject.mc_build as int > 5){
-//            annotationProcessor 'systems.manifold:manifold-preprocessor:2024.1.17'
-//        }else{
-            annotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.17'
-//        }
-//        testAnnotationProcessor 'systems.manifold:manifold-preprocessor:2024.1.16'
-
+        //more compatible version
+//        annotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.17'
+        //latest version
+        annotationProcessor 'systems.manifold:manifold-preprocessor:2024.1.30'
     }
     processResources {
         inputs.property "version", rootProject.mod_version

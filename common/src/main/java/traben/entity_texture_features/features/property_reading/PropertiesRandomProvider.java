@@ -3,7 +3,9 @@ package traben.entity_texture_features.features.property_reading;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import traben.entity_texture_features.ETF;
 import traben.entity_texture_features.ETFApi;
+import traben.entity_texture_features.ETFException;
 import traben.entity_texture_features.features.ETFManager;
 import traben.entity_texture_features.features.ETFRenderContext;
 import traben.entity_texture_features.features.property_reading.properties.RandomProperties;
@@ -29,7 +31,10 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
     protected final EntityBooleanLRU entityCanUpdate = new EntityBooleanLRU(1000);
 
     protected final @NotNull String packname;
-    protected EntityRandomSeedFunction entityRandomSeedFunction = (entity) -> entity.etf$getUuid().hashCode();
+    protected EntityRandomSeedFunction entityRandomSeedFunction = ETFEntity::etf$getOptifineId;
+        //entity.etf$getUuid().hashCode();
+
+
     protected BiConsumer<ETFEntity, @Nullable RandomPropertyRule> onMeetsRule = (entity, rule) -> {
     };
 
@@ -62,7 +67,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
             }
 
             //assure default return always present
-            if (!propertyRules.get(propertyRules.size()-1).isAlwaysMet()){
+            if (!propertyRules.get(propertyRules.size() - 1).isAlwaysMet()) {
                 propertyRules.add(RandomPropertyRule.defaultReturn);
             }
 
@@ -74,18 +79,50 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
                     && properties.equals(ETFUtils2.returnNameOfHighestPackFromTheseTwo(properties, vanillaPack))) {
                 return new PropertiesRandomProvider(propertiesFileIdentifier, propertyRules);
             }
-        } catch (Exception e) {
-            ETFUtils2.logWarn("Ignoring properties file that caused Exception @ " + propertiesFileIdentifier + "\n" + e, false);
+        }catch (ETFException etf){
+            ETFUtils2.logWarn("Ignoring properties file with problem: " + propertiesFileIdentifier + "\n" + etf, false);
+        }catch (Exception e) {
+            ETFUtils2.logWarn("Ignoring properties file that caused unexpected Exception: " + propertiesFileIdentifier + "\n" + e, false);
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<RandomPropertyRule> getAllValidPropertyObjects(Properties properties, ResourceLocation propertiesFilePath, String... suffixToTest) throws Exception {
+    public static List<RandomPropertyRule> getAllValidPropertyObjects(Properties properties, ResourceLocation propertiesFilePath, String... suffixToTest) throws ETFException {
         Set<String> propIds = properties.stringPropertyNames();
         //set so only 1 of each
         List<Integer> numbersList = getCaseNumbers(propIds);
         Collections.sort(numbersList);
+
+        if (numbersList.isEmpty()) {
+            ETFUtils2.logWarn("Properties file [" + propertiesFilePath + "] contains no rules, this is invalid.", false);
+            throw new ETFException("Properties file [" + propertiesFilePath + "] contains no rules, this is invalid.");
+        }
+
+        if(numbersList.get(0) < 1){
+            ETFUtils2.logWarn("Properties file [" + propertiesFilePath + "] contains rule numbers less than 1, this is invalid.", false);
+            throw new ETFException("Properties file [" + propertiesFilePath + "] contains rule numbers less than 1, this is invalid.");
+        }
+
+        //send log message if skipping rule numbers
+        int last = 0;
+        for (Integer i : numbersList) {
+            if (i >= last + 10) {
+                last = -1;
+                break;
+            }
+            last = i;
+        }
+        if (last == -1) {
+           if (ETF.config().getConfig().optifine_limitRandomVariantGapsBy10) {
+                ETFUtils2.logError("Properties file [" + propertiesFilePath + "] has skipped rule numbers by values greater than 10, this is invalid in OptiFine. This limitation can be disabled in ETF's settings, but will make your pack incompatible with OptiFine.", false);
+                throw new ETFException("Properties file [" + propertiesFilePath + "] has skipped rule numbers by values greater than 10, this is invalid in OptiFine. This limitation can be disabled in ETF's settings, but will make your pack incompatible with OptiFine.");
+            }else{
+                ETFUtils2.logWarn("Properties file [" + propertiesFilePath + "] has skipped rule numbers by values greater than 10, this is invalid in OptiFine. This limitation has been disabled in ETF's settings, your pack is incompatible with OptiFine.", false);
+            }
+        }
+
         List<RandomPropertyRule> allRulesOfProperty = new ArrayList<>();
         for (Integer ruleNumber :
                 numbersList) {
@@ -133,13 +170,13 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
     }
 
     @Nullable
-    private static Integer[] getSuffixes(Properties props, int num, String... suffixToTest) throws Exception {
+    private static Integer[] getSuffixes(Properties props, int num, String... suffixToTest) throws ETFException {
         var suffixes = SimpleIntegerArrayProperty.getGenericIntegerSplitWithRanges(props, num, suffixToTest);
         //throw if it contains 0 or negatives
         if (suffixes != null) {
             for (Integer suffix : suffixes) {
                 if (suffix < 1) {
-                    throw new Exception("Invalid suffix: [" + suffix + "] in " + Arrays.toString(suffixes));
+                    throw new ETFException("Invalid suffix: [" + suffix + "] in " + Arrays.toString(suffixes));
                 }
             }
         }
@@ -157,7 +194,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
             this.onMeetsRule = onMeetsRule;
     }
 
-    public @NotNull String getPackName() {
+    public @NotNull String getPackName() {//todo check not used by EMF or ESF
         return packname;
     }
 
@@ -213,7 +250,7 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
 
     private int testEntityAgainstRules(final ETFEntity entityToBeTested) {
         for (RandomPropertyRule rule : propertyRules) {
-            if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, true, entityCanUpdate)) {
+            if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, entityCanUpdate.containsKey(entityToBeTested.etf$getUuid()), entityCanUpdate)) {
                 onMeetsRule.accept(entityToBeTested, rule);
                 return rule.getVariantSuffixFromThisCase(entityRandomSeedFunction.toInt(entityToBeTested));
             }

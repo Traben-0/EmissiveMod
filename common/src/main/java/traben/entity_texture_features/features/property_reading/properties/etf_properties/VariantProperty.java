@@ -33,11 +33,10 @@ import java.util.Properties;
 
 public class VariantProperty extends StringArrayOrRegexProperty {
 
-    private final boolean doPrint;
+
 
     protected VariantProperty(String string) throws RandomPropertyException {
-        super(string.replace("print:", ""));
-        doPrint = string.startsWith("print:");
+        super(string);
     }
 
     public static VariantProperty getPropertyOrNull(Properties properties, int propertyNum) {
@@ -53,16 +52,8 @@ public class VariantProperty extends StringArrayOrRegexProperty {
         return false;
     }
 
-    @Override
-    protected @Nullable String getValueFromEntity(ETFEntity etfEntity) {
-        String value = getValueFromEntityInternal(etfEntity);
-        if (doPrint) {
-            ETFUtils2.logMessage("[variant property print] = " + (value == null ? "//VARIANT CHECK FAILED AND WILL RETURN FALSE//" : value));
-        }
-        return value;
-    }
 
-    private @Nullable String getValueFromEntityInternal(ETFEntity etfEntity) {
+    public @Nullable String getValueFromEntity(ETFEntity etfEntity) {
         if (etfEntity instanceof Entity) {
             if (etfEntity instanceof VariantHolder<?> variableEntity) {
                 if (variableEntity.getVariant() instanceof StringRepresentable stringIdentifiable) {
@@ -100,6 +91,7 @@ public class VariantProperty extends StringArrayOrRegexProperty {
             return BuiltInRegistries.ENTITY_TYPE.getResourceKey(((Entity) etfEntity).getType()).map(key -> key.location().getPath()).orElse(null);
 
         } else if (etfEntity instanceof BlockEntity) {
+            //noinspection IfCanBeSwitch
             if (etfEntity instanceof SignBlockEntity signBlockEntity
                     && signBlockEntity.getBlockState().getBlock() instanceof SignBlock abstractSignBlock) {
                 return abstractSignBlock.type().name();

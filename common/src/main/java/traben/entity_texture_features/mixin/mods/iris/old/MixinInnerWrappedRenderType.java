@@ -1,5 +1,5 @@
 package traben.entity_texture_features.mixin.mods.iris.old;
-#if MC < MC_21
+#if MC < MC_20_4 && MC > MC_20_1
 import net.coderbot.iris.layer.InnerWrappedRenderType;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -32,11 +32,11 @@ public abstract class MixinInnerWrappedRenderType implements ETFRenderLayerWithT
     }
 }
 #else
-import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
+import traben.entity_texture_features.ETFException;
 
 @Pseudo
-@Mixin(Minecraft.class)
+@Mixin(ETFException.class)
 public class MixinInnerWrappedRenderType {}
 #endif

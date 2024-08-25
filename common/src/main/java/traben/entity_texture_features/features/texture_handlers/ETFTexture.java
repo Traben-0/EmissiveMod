@@ -18,11 +18,10 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.item.armortrim.ArmorTrim;
-import org.intellij.lang.annotations.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.ETF;
+import traben.entity_texture_features.ETFException;
 import traben.entity_texture_features.config.ETFConfig;
 import traben.entity_texture_features.features.ETFManager;
 import traben.entity_texture_features.features.ETFRenderContext;
@@ -31,8 +30,6 @@ import traben.entity_texture_features.utils.ETFUtils2;
 
 import java.util.Optional;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 //can either refer to a vanilla identifier or a variant
@@ -152,7 +149,7 @@ public class ETFTexture {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new IndexOutOfBoundsException("additional texture is not the correct size, ETF has crashed in the patching stage");
+            throw new ETFException("additional texture is not the correct size, ETF has crashed in the patching stage");
         }
     }
 
