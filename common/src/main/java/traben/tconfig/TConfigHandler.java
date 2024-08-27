@@ -70,6 +70,7 @@ public class TConfigHandler<T extends TConfig> {
         if (configDir == null) return;
 
         File config = new File(configDir.toFile(), configFileName);
+        //noinspection ResultOfMethodCallIgnored
         config.getParentFile().mkdirs();
 
         try (FileWriter fileWriter = new FileWriter(config)) {
@@ -120,7 +121,7 @@ public class TConfigHandler<T extends TConfig> {
     }
 
     public T fromJson(FileReader json) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().setLenient().create();
         return gson.fromJson(json, configClass);
     }
 
