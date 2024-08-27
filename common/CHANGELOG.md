@@ -1,5 +1,10 @@
 [**ETF Changelog:**]
 
+[6.2.2]
+- added more leniency to the mod config file reading used by this, EMF, and ESF
+- now catches all exceptions on mod config file reading not just IOExceptions
+
+[6.2.1]
 - fixed a bug where non updating properties, e.g. `biomes`, would not test correctly
 - added an OptiFine parity settings category and a few options to control matching OptiFine restrictions or weirdness
 - random suffix selection now completely matches what optifine users will randomly get

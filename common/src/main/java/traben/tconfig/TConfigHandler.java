@@ -2,6 +2,8 @@ package traben.tconfig;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import traben.entity_texture_features.ETFVersionDifferenceManager;
 
 import java.io.File;
@@ -70,6 +72,7 @@ public class TConfigHandler<T extends TConfig> {
         if (configDir == null) return;
 
         File config = new File(configDir.toFile(), configFileName);
+        //noinspection ResultOfMethodCallIgnored
         config.getParentFile().mkdirs();
 
         try (FileWriter fileWriter = new FileWriter(config)) {
@@ -98,8 +101,8 @@ public class TConfigHandler<T extends TConfig> {
         if (config.exists()) {
             try (FileReader fileReader = new FileReader(config)) {
                 CONFIG = fromJson(fileReader);
-            } catch (IOException e) {
-                TConfigLog.log(logID, "Config could not be loaded, using defaults");
+            } catch (Exception e) {
+                TConfigLog.logError(logID, "Config could not be loaded, using defaults");
                 CONFIG = newConfigSupplier.get();
             }
         } else {
@@ -107,7 +110,7 @@ public class TConfigHandler<T extends TConfig> {
         }
 
         if (CONFIG == null) {
-            TConfigLog.log(logID, "Config was null, using defaults");
+            TConfigLog.logError(logID, "Config was null, using defaults");
             CONFIG = newConfigSupplier.get();
         }
 
@@ -119,8 +122,8 @@ public class TConfigHandler<T extends TConfig> {
         return gson.fromJson(json, configClass);
     }
 
-    public T fromJson(FileReader json) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    public T fromJson(FileReader json) throws JsonIOException, JsonSyntaxException {
+        Gson gson = new GsonBuilder().setLenient().create();
         return gson.fromJson(json, configClass);
     }
 
