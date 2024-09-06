@@ -1,5 +1,9 @@
 [**ETF Changelog:**]
 
+- removed excessive log spam from the nbt property rewrite in 6.2 with empty/missing nbt values
+- fixed `biomes` property breaking when adding the redundant `minecraft:`
+- replaced the `Hide settings button` setting with `Settings button location` to choose where/how the resource-pack screen settings button appears these can be: `OFF`, `BOTTOM_RIGHT`, `BOTTOM_LEFT`, `TOP_RIGHT`, `TOP_LEFT`. Defaults to bottom right.
+
 [6.2.2]
 - added more leniency to the mod config file reading used by this, EMF, and ESF
 - now catches all exceptions on mod config file reading not just IOExceptions

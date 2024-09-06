@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import traben.entity_texture_features.ETF;
+import traben.entity_texture_features.config.ETFConfig;
 import traben.entity_texture_features.config.screens.ETFConfigScreenMain;
 import traben.entity_texture_features.utils.ETFUtils2;
 
@@ -46,49 +47,68 @@ public abstract class MixinPackScreen extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void etf$etfButton(CallbackInfo ci) {
-        if (!ETF.config().getConfig().hideConfigButton
-                && this.minecraft != null
-                //ensure this is the resource-pack screen and not the data-pack screen
-                && this.packDir.equals(this.minecraft.getResourcePackDirectory())
-                //fabric api required for mod asset texture loading
-                && (ETF.isFabric() == ETF.isThisModLoaded("fabric"))
-            //check for 1.20.2
-//                && MinecraftClient.getInstance().getResourceManager().getResource(etf$focused).isPresent()
-        ) {
 
-            int x = doneButton.getX() + doneButton.getWidth() + 8;
-            int y = doneButton.getY();
+        if (ETF.config().getConfig().configButtonLoc == ETFConfig.SettingsButtonLocation.OFF) return;
 
-// simple text button
-//            this.addDrawableChild(ButtonWidget.builder(Text.of("ETF"),
-//                            (button) -> Objects.requireNonNull(client).setScreen(new ETFConfigScreenMain(this)))
-//                    .dimensions(x, y, 24, 20)
-//                    .tooltip(Tooltip.of(ETFVersionDifferenceHandler.getTextFromTranslation(
-//                            "config.entity_texture_features.button_tooltip")))
-//                    .build()
-//            );
+        if (this.minecraft == null
+                || !this.packDir.equals(this.minecraft.getResourcePackDirectory())
+                || (ETF.isFabric() != ETF.isThisModLoaded("fabric")))
+            return;
 
-            //1.20.2 onwards textured button requires these overrides
-            this.addRenderableWidget(new ImageButton(
-                    x, y, 24, 20,
-                    #if MC > MC_20_1 new WidgetSprites(etf$UNFOCUSED, etf$FOCUSED), #else 0,0,20, etf$UNFOCUSED, #endif
-                    (button) -> Objects.requireNonNull(minecraft).setScreen(new ETFConfigScreenMain(this))
-                    #if MC > MC_20_1 , Component.nullToEmpty("") #endif) {
-                {
-                    setTooltip(Tooltip.create(ETF.getTextFromTranslation(
-                            "config.entity_features.button_tooltip")));
-                }
+//        int x = doneButton.getX() + doneButton.getWidth() + 8;
+//        int y = doneButton.getY();
 
-                //override required because textured button widget just doesnt work
-                @Override
-                public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
-                    ResourceLocation identifier = this.isHoveredOrFocused() ? etf$FOCUSED : etf$UNFOCUSED;
-                    context.blit(identifier, this.getX(), this.getY(), 0, 0, this.width, this.height, this.width, this.height);
-                }
+        int x, y;
 
-            });
-
+        switch (ETF.config().getConfig().configButtonLoc) {
+            case BOTTOM_RIGHT -> {
+                x = doneButton.getX() + doneButton.getWidth() + 8;
+                y = doneButton.getY();
+            }
+            case BOTTOM_LEFT -> {
+                int middle = width / 2;
+                int bottomRight = doneButton.getX() + doneButton.getWidth() + 8;
+                int offset = bottomRight - middle;
+                x = middle - offset - 24;
+                y = doneButton.getY();
+            }
+            case TOP_RIGHT -> {
+                x = doneButton.getX() + doneButton.getWidth() + 8;
+                y = height - doneButton.getY() - doneButton.getHeight();
+            }
+            case TOP_LEFT -> {
+                var middle = width / 2;
+                var bottomRight = doneButton.getX() + doneButton.getWidth() + 8;
+                var offset = bottomRight - middle;
+                x = middle - offset - 24;
+                y = height - doneButton.getY() - doneButton.getHeight();
+            }
+            default -> {
+                return;
+            }
         }
+
+
+        this.addRenderableWidget(new ImageButton(
+                x, y, 24, 20,
+                    #if MC > MC_20_1 new WidgetSprites(etf$UNFOCUSED, etf$FOCUSED), #else 0,0,20, etf$UNFOCUSED, #endif
+                (button) -> Objects.requireNonNull(minecraft).setScreen(new ETFConfigScreenMain(this))
+                    #if MC > MC_20_1 , Component.nullToEmpty("") #endif ) {
+            {
+                setTooltip(Tooltip.create(ETF.getTextFromTranslation(
+                        "config.entity_features.button_tooltip")));
+            }
+
+            //override required because textured button widget just doesnt work
+            @Override
+            public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+                ResourceLocation identifier = this.isHoveredOrFocused() ? etf$FOCUSED : etf$UNFOCUSED;
+                context.blit(identifier, this.getX(), this.getY(), 0, 0, this.width, this.height, this.width, this.height);
+            }
+
+        });
+
+
     }
 }
 

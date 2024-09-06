@@ -139,7 +139,7 @@ public class NBTProperty extends RandomProperty {
         for (String instruction : nbtIdentifier.split("\\.")) {
             //noinspection IfCanBeSwitch
             if (lastElement == null) {
-                ETFUtils2.logWarn("null nbt in ETF");
+                //ETFUtils2.logWarn("null nbt in ETF");
                 return null;
             }
             if (lastElement instanceof CompoundTag nbtCompound) {
