@@ -88,7 +88,7 @@
   "config.entity_texture_features.enable_emissive_textures.title": "Texturas de entidad con emisión",
   "config.entity_texture_features.enable_emissive_textures.tooltip": "Habilita las texturas de entidad con emisión\nFunciona con paquetes de recursos\nusando el formato de OptiFine",
   "config.entity_texture_features.enable_enemy_team_players_skin_features.title": "Características de piel de equipos enemigos",
-  "config.entity_texture_features.enable_enemy_team_players_skin_features.tooltip": "Allows player skin features to be enabled/disabled\nfor players on opposing teams in PvP games,\notherwise they may be harder to see\nand may affect balance\n///THIS SETTING REQUIRES A RESTART\\\\\\",
+  "config.entity_texture_features.enable_enemy_team_players_skin_features.tooltip": "Permite habilitar/deshabilitar las pieles de jugadores\npara jugadores en equipos opuestos en juegos PvP,\nde lo contrario pueden ser más difíciles de ver\ny pueden afectar el equilibrio\n///ESTA CONFIGURACIÓN REQUIERE UN REINICIO\\\\\\",
   "config.entity_texture_features.enable_tridents.title": "Tridentes personalizados",
   "config.entity_texture_features.enable_tridents.tooltip": "Permite que los tridentes usen texturas personalizadas y de emisión\nEste interruptor está aquí para admitir posibles actualizaciones futuras del mod CIT\nEl nombre del objeto tridente elegirá el archivo de textura a usar\nLa textura 'trident_bobbys_trident.png' se elegirá por los nombres:\n'Tridente de Bobby', ' BoBb%Ys   Trid##en t' y 'bobbys_trident'.\nLa textura 'trident_bobbys_trident_e.png' será de emisión.",
   "config.entity_texture_features.enchanted_enable": "Enchanted entity textures",
