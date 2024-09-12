@@ -44,6 +44,7 @@ public class RandomProperties {
                 RandomPropertyFactory.of("blockSpawned", "config.entity_texture_features.property_explanation.block_spawned", BlockSpawnedProperty::getPropertyOrNull, true),
                 RandomPropertyFactory.of("nbtVehicle", "config.entity_texture_features.property_explanation.nbt_vehicle", NBTVehicleProperty::getPropertyOrNull),
 
+
                 //etf externals
                 RandomPropertyFactory.of("hour", "config.entity_texture_features.property_explanation.hour", HourProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("minute", "config.entity_texture_features.property_explanation.min", MinuteProperty::getPropertyOrNull),
@@ -57,7 +58,7 @@ public class RandomProperties {
                 RandomPropertyFactory.of("textureSuffix", "config.entity_texture_features.property_explanation.texture_suffix", TextureSuffixProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("textureRule", "config.entity_texture_features.property_explanation.texture_rule", TextureRuleIndexProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("modLoaded", "config.entity_texture_features.property_explanation.mod_rule", ModLoadedProperty::getPropertyOrNull),
-
+                RandomPropertyFactory.of("nbtClient", "config.entity_texture_features.property_explanation.nbt_client", NBTClientProperty::getPropertyOrNull),
 
                 //OptiFine properties
                 RandomPropertyFactory.of("baby", "config.entity_texture_features.property_explanation.baby", BabyProperty::getPropertyOrNull),

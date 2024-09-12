@@ -3,7 +3,8 @@
 [6.2.4]
 - fixed the `nbt` property breaking since version 6.2 when declaring more than one `nbt` property in a single rule
 - added the `nbtVehicle` property to vary textures by the entity nbt data of the entity being ridden by the current entity, passenger nbt can be found within the regular `nbt` property under the passenger nbt data
- 
+- added the `nbtClient` property to vary textures by the entity nbt data of the client player
+
 [6.2.3]
 - removed excessive log spam from the nbt property rewrite in 6.2 with empty/missing nbt values
 - fixed `biomes` property breaking when adding the redundant `minecraft:`

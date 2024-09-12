@@ -1,4 +1,4 @@
-package traben.entity_texture_features.features.property_reading.properties.etf_properties;
+package traben.entity_texture_features.features.property_reading.properties.etf_properties.external;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
