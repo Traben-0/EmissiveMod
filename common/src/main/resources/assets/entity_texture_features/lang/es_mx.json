@@ -1,10 +1,16 @@
 {
   "config.entity_features": "Entity Features mod settings",
+  "config.entity_features.optifine_settings": "OptiFine Compat",
   "config.entity_features.button_tooltip": "Opens the Entity Features config screen.",
   "config.entity_features.empty": "No settings available",
   "config.entity_features.empty_emf": "No settings available\nThe Entity Model Features mod is needed if you want OptiFine format Custom Entity Models.",
   "config.entity_features.empty_esf": "No settings available\nThe Entity Sound Features mod is needed if you want Varied Entity Sounds.",
   "config.entity_features.general_settings.title": "Misc settings",
+  "config.entity_texture_features.optifine.desc": "These options are for backwards compatibility with OptiFine.\nSome will put limitations on certain features because OptiFine does.\nSome will enable some odd behaviours because OptiFine does.",
+  "config.entity_texture_features.optifine.variant_gap.title": "Limit rule number gaps",
+  "config.entity_texture_features.optifine.variant_gap.tooltip": "OptiFine limits random .properties file rule numbers such that in\nsequential order the rule numbers do not exceed a gap of 9.\nThis setting enforces this limit in ETF if enabled, for OptiFine compatibility.",
+  "config.entity_texture_features.optifine.random_skips.title": "Allow random suffix number skipping",
+  "config.entity_texture_features.optifine.random_skips.tooltip": "OptiFine allows random suffix variants, when not using .properties, to skip some numbers\nDoing so is considered a bad practise, they should always be sequential.\nThis setting will allow ETF to skip numbers like OptiFine.",
   "config.entity_features.per_entity_settings.blocks": "These block entity renderers might",
   "config.entity_features.per_entity_settings.blocks2": " not actually use these features",
   "config.entity_features.per_entity_settings.layer": "RenderLayer override",
@@ -280,5 +286,7 @@
   "config.entity_texture_features.property_explanation.year_day": "Year Day \nSelect which day of the year it must be from 1 - 366\nExample: yearDay.1=1-100\n§ayearDay.<n>=<list>",
   "config.entity_texture_features.property_explanation.mod_rule": "Mods Loaded \nSelect what mods must be loaded\nfor instance if you need to disable or modify certain textures or animations for certain mod compatibilites\nExample: modLoaded.1=sodium iris\n§amodLoaded.<n>=<list>",
   "config.entity_texture_features.property_explanation.texture_rule": "Texture Rule (Optional)\nmatches the last random texture rule number that the entities texture matched against\ndefaults to 0\nExample: textureRule.1= 2 4 6\n§atextureRule.<n>=<list>",
-  "config.entity_texture_features.property_explanation.texture_suffix": "Texture Suffix (Optional)\nmatches the last random texture suffix number that the entities texture was set to\ndefaults to 0\nExample: textureSuffix.1= 2 4 6\n§atextureSuffix.<n>=<list>"
+  "config.entity_texture_features.property_explanation.texture_suffix": "Texture Suffix (Optional)\nmatches the last random texture suffix number that the entities texture was set to\ndefaults to 0\nExample: textureSuffix.1= 2 4 6\n§atextureSuffix.<n>=<list>",
+  "config.entity_texture_features.transparent_skins_extra.title": "Better vanilla skin transparency",
+  "config.entity_texture_features.transparent_skins_extra.tooltip": "Tweaks the vanilla skin transparency code to make it not affect all the extra pixels that aren't actually used in your skin\nThis allows transparency in these extra pixels without affecting the vanilla skin behaviour\nVery useful for custom player models"
 }

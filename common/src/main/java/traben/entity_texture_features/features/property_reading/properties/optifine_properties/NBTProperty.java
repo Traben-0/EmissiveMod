@@ -3,6 +3,7 @@ package traben.entity_texture_features.features.property_reading.properties.opti
 import it.unimi.dsi.fastutil.Function;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.features.property_reading.properties.RandomProperty;
 import traben.entity_texture_features.features.property_reading.properties.generic_properties.SimpleIntegerArrayProperty;
 import traben.entity_texture_features.features.property_reading.properties.generic_properties.StringArrayOrRegexProperty;
@@ -24,10 +25,11 @@ public class NBTProperty extends RandomProperty {
     private final Map<String, NBTTester> NBT_MAP;
     private boolean printAll = false;
 
+    private final String prefix;
 
-    protected NBTProperty(Properties properties, int propertyNum) throws RandomPropertyException {
-
-        final String keyPrefix = "nbt." + propertyNum + '.';
+    protected NBTProperty(Properties properties, int propertyNum, String nbtPrefix) throws RandomPropertyException {
+        prefix = nbtPrefix;
+        final String keyPrefix = prefix+"." + propertyNum + '.';
         NBT_MAP = new Object2ObjectLinkedOpenHashMap<>();
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             String key = entry.getKey().toString();//are null keys allowed in properties?
@@ -49,7 +51,7 @@ public class NBTProperty extends RandomProperty {
 
     public static NBTProperty getPropertyOrNull(Properties properties, int propertyNum) {
         try {
-            return new NBTProperty(properties, propertyNum);
+            return new NBTProperty(properties, propertyNum, "nbt");
         } catch (RandomPropertyException e) {
             return null;
         }
@@ -65,34 +67,66 @@ public class NBTProperty extends RandomProperty {
     }
 
 
+    protected @Nullable CompoundTag getEntityNBT(ETFEntity entity) {
+        //might return null, empty, INTENTIONAL_FAILURE, or throw an exception
+        return entity.etf$getNbt();
+    }
+
+    protected static final CompoundTag INTENTIONAL_FAILURE = new CompoundTag();
 
     @Override
     protected boolean testEntityInternal(ETFEntity entity) {
-        CompoundTag entityNBT = entity.etf$getNbt();
+        CompoundTag entityNBT;
+        try {
+            //return for child property instances
+            entityNBT = getEntityNBT(entity);
+        }catch (Exception e){
+            ETFUtils2.logError(prefix+" test crashed reading entity NBT");
+            throw e;
+        }
 
-        if (entityNBT.isEmpty()) {
-            ETFUtils2.logError("NBT test failed, as could not read entity NBT");
+        //dont log expected failure unless printing
+        if (entityNBT == INTENTIONAL_FAILURE) {
+            if (printAll) {
+                ETFUtils2.logMessage(prefix+" property [full] print:\n<NBT is missing>");
+            }
             return false;
         }
-        if (printAll) {
-            ETFUtils2.logMessage("NBT property [full] print:\n" + formatNbtPretty(entityNBT));
+
+        if (entityNBT == null || entityNBT.isEmpty()) {
+            if (printAll) {
+                ETFUtils2.logMessage(prefix+" property [full] print:\n<NBT is empty or missing>");
+            }
+            //log unexpected failure
+            ETFUtils2.logError(prefix+" test failed, as could not read entity NBT");
+            return false;
         }
 
+        if (printAll) {
+            ETFUtils2.logMessage(prefix+" property [full] print:\n" + formatNbtPretty(entityNBT));
+        }
+
+        return testAllNBTCases(entityNBT);
+    }
+
+    protected boolean testAllNBTCases(final CompoundTag entityNBT) {
         for (Map.Entry<String, NBTTester> nbtPropertyEntry : NBT_MAP.entrySet()) {
             NBTTester data = nbtPropertyEntry.getValue();
             Tag finalNBTElement = findNBTElement(entityNBT, nbtPropertyEntry.getKey());
-
 
             boolean doesTestPass = finalNBTElement == null ? data.wantsBlank : data.tester.apply(finalNBTElement);
 
             if (data.print) {
                 String printString = finalNBTElement == null ? "<NBT component not found>" : finalNBTElement.getAsString();
-                ETFUtils2.logMessage("NBT property [single] print data: " + nbtPropertyEntry.getKey() + "=" + printString);
-                ETFUtils2.logMessage("NBT property [single] print result: " + (data.inverts != doesTestPass));
+                ETFUtils2.logMessage(prefix+" property [single] print data: " + nbtPropertyEntry.getKey() + "=" + printString);
+                ETFUtils2.logMessage(prefix+" property [single] print result: " + (data.inverts != doesTestPass));
 
             }
-
-            return data.inverts != doesTestPass;
+            //break if test fails
+            if (data.inverts == doesTestPass){
+                return false;
+            }
+            //otherwise check further nbt
         }
         return true;
     }
@@ -139,7 +173,7 @@ public class NBTProperty extends RandomProperty {
         for (String instruction : nbtIdentifier.split("\\.")) {
             //noinspection IfCanBeSwitch
             if (lastElement == null) {
-                ETFUtils2.logWarn("null nbt in ETF");
+                //ETFUtils2.logWarn("null nbt in ETF");
                 return null;
             }
             if (lastElement instanceof CompoundTag nbtCompound) {

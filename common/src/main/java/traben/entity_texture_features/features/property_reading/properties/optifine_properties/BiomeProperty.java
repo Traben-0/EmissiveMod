@@ -34,8 +34,9 @@ public class BiomeProperty extends StringArrayOrRegexProperty {
                 //only here for compat, pack makers need to fix these
                 if (biomeList.length > 0) {
                     for (int currentIndex = 0; currentIndex < biomeList.length; currentIndex++) {
-                        String currentBiome = biomeList[currentIndex].strip();
-                        switch (currentBiome) {
+                        biomeList[currentIndex] = biomeList[currentIndex].strip().replaceAll("^minecraft:", "");
+
+                        switch (biomeList[currentIndex]) {
                             //case "Ocean" -> biomeList[i] = "ocean";
                             //case "Plains" -> biomeList[i] = "plains";
                             case "ExtremeHills" -> biomeList[currentIndex] = "stony_peaks";
@@ -55,6 +56,7 @@ public class BiomeProperty extends StringArrayOrRegexProperty {
                             case "ExtremeHillsEdge" -> biomeList[currentIndex] = "meadow";
                             case "Jungle", "JungleHills" -> biomeList[currentIndex] = "jungle";
                             default -> {
+                                String currentBiome = biomeList[currentIndex];
                                 if (!currentBiome.contains("_") && !currentBiome.equals(currentBiome.toLowerCase())) {
                                     //has capitals and no "_" it is probably the camel case format
                                     biomeList[currentIndex] = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, currentBiome);
