@@ -113,7 +113,7 @@ public abstract class MixinEntity implements ETFEntity {
     public CompoundTag etf$getNbt() {
         return ETFRenderContext.cacheEntityNBTForFrame(etf$getUuid(),
                 ()->NbtPredicate.getEntityTagToCompare(((Entity)((Object)this))));
-//        //try include id
+        //try include id
 //        if (saveAsPassenger(comp)) {
 //            return comp;
 //        }

@@ -72,7 +72,10 @@ public final class ETFConfig extends TConfig {
     public double advanced_IncreaseCacheSizeModifier = 1.0;
     public DebugLogMode debugLoggingMode = DebugLogMode.None;
     public boolean logTextureDataInitialization = false;
+    @Deprecated
     public boolean hideConfigButton = false;
+
+    public SettingsButtonLocation configButtonLoc = SettingsButtonLocation.BOTTOM_RIGHT;
     public boolean disableVanillaDirectoryVariantTextures = false;
     public boolean use3DSkinLayerPatch = true;
     public boolean enableFullBodyWardenTextures = true;
@@ -240,8 +243,8 @@ public final class ETFConfig extends TConfig {
                                 () -> illegalPathSupportMode, illegalPathMode -> illegalPathSupportMode = illegalPathMode, IllegalPathMode.None),
                         new TConfigEntryBoolean("config.entity_texture_features.warden.title", "config.entity_texture_features.warden.tooltip",
                                 () -> enableFullBodyWardenTextures, aBoolean -> enableFullBodyWardenTextures = aBoolean, true),
-                        new TConfigEntryBoolean("config.entity_features.hide_button", "config.entity_features.hide_button.tooltip",
-                                () -> hideConfigButton, aBoolean -> hideConfigButton = aBoolean, false)
+                        new TConfigEntryEnumButton<>("config.entity_texture_features.settings_button_loc.title", "config.entity_texture_features.settings_button_loc.tooltip",
+                                () -> configButtonLoc, settingsButtonLocation -> configButtonLoc = settingsButtonLocation, SettingsButtonLocation.BOTTOM_RIGHT)
                 ),
                 new TConfigEntryCategory("config.entity_texture_features.restrict_update_properties2").addAll(
                         getPropertySettings()
@@ -493,6 +496,14 @@ public final class ETFConfig extends TConfig {
             return ETF.getTextFromTranslation(key).getString();
         }
 
+    }
+
+    public enum SettingsButtonLocation{
+        OFF,
+        BOTTOM_RIGHT,
+        TOP_RIGHT,
+        TOP_LEFT,
+        BOTTOM_LEFT
     }
 
     public enum SkinTransparencyMode {
