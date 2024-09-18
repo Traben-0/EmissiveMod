@@ -232,12 +232,12 @@ public abstract class ETFUtils2 {
             if (player != null) {
                 player.displayClientMessage(MutableComponent.create(
                         new #if MC > MC_20_2 PlainTextContents.LiteralContents #else LiteralContents #endif
-                                ("§a[INFO]§r [Entity Texture Features]: " + obj))/*.formatted(Formatting.GRAY, Formatting.ITALIC)*/ , false);
+                                ("§a[INFO]§r [ETF]: " + obj))/*.formatted(Formatting.GRAY, Formatting.ITALIC)*/ , false);
             } else {
-                ETF.LOGGER.info(obj);
+                ETF.LOGGER.info("[ETF]: {}", obj);
             }
         } else {
-            ETF.LOGGER.info(obj);
+            ETF.LOGGER.info("[ETF]: {}", obj);
         }
     }
 
@@ -255,10 +255,10 @@ public abstract class ETFUtils2 {
                         new #if MC > MC_20_2 PlainTextContents.LiteralContents #else LiteralContents #endif
                                 ("§e[WARN]§r [Entity Texture Features]: " + obj)).withStyle(ChatFormatting.YELLOW), false);
             } else {
-                ETF.LOGGER.warn(obj);
+                ETF.LOGGER.warn("[ETF]: {}", obj);
             }
         } else {
-            ETF.LOGGER.warn(obj);
+            ETF.LOGGER.warn("[ETF]: {}", obj);
         }
     }
 
@@ -276,10 +276,10 @@ public abstract class ETFUtils2 {
                         new #if MC > MC_20_2 PlainTextContents.LiteralContents #else LiteralContents #endif
                                 ("§4[ERROR]§r [Entity Texture Features]: " + obj)).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), false);
             } else {
-                ETF.LOGGER.error(obj);
+                ETF.LOGGER.error("[ETF]: {}", obj);
             }
         } else {
-            ETF.LOGGER.error(obj);
+            ETF.LOGGER.error("[ETF]: {}", obj);
         }
     }
 

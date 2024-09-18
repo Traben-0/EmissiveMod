@@ -50,8 +50,9 @@ public abstract class RandomProperty {
      * @return true if the entity meets the requirements of this property
      */
     public boolean testEntity(ETFEntity entity, boolean isUpdate) {
-        if (isUpdate && !(canPropertyUpdate())) {
-            return entityCachedInitialResult.getBoolean(entity.etf$getUuid());//false default value
+        var key = entity.etf$getUuid();
+        if (isUpdate && !canPropertyUpdate() && entityCachedInitialResult.containsKey(key)) {
+            return entityCachedInitialResult.getBoolean(key);//false default value
         }
         try {
             return testEntityInternal(entity);
@@ -110,7 +111,11 @@ public abstract class RandomProperty {
     }
 
     public void cacheEntityInitialResult(ETFEntity entity) {
-        entityCachedInitialResult.put(entity.etf$getUuid(), testEntityInternal(entity));
+        try {
+            entityCachedInitialResult.put(entity.etf$getUuid(), testEntityInternal(entity));
+        } catch (Exception ignored) {
+            entityCachedInitialResult.put(entity.etf$getUuid(), false);
+        }
     }
 
     /**
