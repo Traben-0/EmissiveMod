@@ -1,5 +1,5 @@
 package traben.entity_texture_features.neoforge.mixin;
-
+#if MC < MC_21_2
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -20,6 +20,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.armortrim.ArmorTrim;
 import org.checkerframework.checker.units.qual.A;
+
+#else
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.EquipmentModel;
+#endif
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,11 +41,63 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import traben.entity_texture_features.config.screens.skin.ETFScreenOldCompat;
 import traben.entity_texture_features.features.texture_handlers.ETFArmorHandler;
 
-
+#if MC > MC_21
+@Mixin(EquipmentLayerRenderer.class)
+public abstract class MixinArmorFeatureRenderer {
+#else
 @Mixin(HumanoidArmorLayer.class)
 public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extends HumanoidModel<T>> extends RenderLayer<T, M> {
+#endif
     @Unique
-    private final ETFArmorHandler etf$armorHandler = new ETFArmorHandler();
+    private static final ETFArmorHandler etf$armorHandler = new ETFArmorHandler();
+
+    @Inject(method =
+            #if MC > MC_21
+            "renderLayers(Lnet/minecraft/world/item/equipment/EquipmentModel$LayerType;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            #else
+            "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
+            #endif
+            at = @At(value = "HEAD"), cancellable = true)
+    private void etf$cancelIfUi(CallbackInfo ci) {
+        if (Minecraft.getInstance().screen instanceof ETFScreenOldCompat) {
+            //cancel armour rendering
+            ci.cancel();
+        }
+    }
+
+
+    #if MC >= MC_21_2
+
+    @Inject(method = "renderLayers(Lnet/minecraft/world/item/equipment/EquipmentModel$LayerType;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "HEAD"))
+    private void etf$markNotToChange(CallbackInfo ci) {
+        etf$armorHandler.start();
+    }
+
+    @Inject(method = "renderLayers(Lnet/minecraft/world/item/equipment/EquipmentModel$LayerType;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "RETURN"))
+    private void etf$markAllowedToChange(CallbackInfo ci) {
+        etf$armorHandler.end();
+    }
+
+    @ModifyArg(method = "renderLayers(Lnet/minecraft/world/item/equipment/EquipmentModel$LayerType;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "INVOKE", target = "Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;"))
+    private Object etf$setTrim(final Object t) {
+        if (t instanceof EquipmentLayerRenderer.TrimSpriteKey trimSpriteKey){
+            etf$armorHandler.setTrim(trimSpriteKey.trim.getTexture(trimSpriteKey.layerType, trimSpriteKey.equipmentModelId));
+        }
+        return t;
+    }
+
+    @Inject(method = "renderLayers(Lnet/minecraft/world/item/equipment/EquipmentModel$LayerType;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/Model;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V",
+                    shift = At.Shift.AFTER))
+    private void etf$renderEmissiveTrim(final EquipmentModel.LayerType layerType, final ResourceLocation resourceLocation, final Model model, final ItemStack itemStack, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i, final ResourceLocation resourceLocation2, final CallbackInfo ci) {
+        etf$armorHandler.renderTrimEmissive(poseStack, multiBufferSource, model);
+    }
+
+    #else
+
 
     @SuppressWarnings("unused")
     public MixinArmorFeatureRenderer(RenderLayerParent<T, M> context) {
@@ -86,14 +150,7 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extend
 
     }
 
-    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
-            at = @At(value = "HEAD"), cancellable = true)
-    private void etf$cancelIfUi(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
-        if (Minecraft.getInstance().screen instanceof ETFScreenOldCompat) {
-            //cancel armour rendering
-            ci.cancel();
-        }
-    }
+
 
 
     #if MC >= MC_20_6
@@ -140,6 +197,7 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extend
 #endif
         etf$armorHandler.renderTrimEmissive(arg2,arg3,arg5);
     }
+    #endif
 }
 
 
