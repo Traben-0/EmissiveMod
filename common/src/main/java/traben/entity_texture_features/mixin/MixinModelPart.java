@@ -78,7 +78,7 @@ public abstract class MixinModelPart {
                     if (provider != null && layer != null) {
                         //attempt special renders as eager OR checks
                         ETFUtils2.RenderMethodForOverlay renderer = (a, b) -> render(matrices, a, b, overlay, #if MC < MC_21 red, green, blue, alpha #else k #endif);
-                        if (ETFUtils2.renderEmissive(texture, provider, renderer)
+                        if (ETFUtils2.renderEmissive(texture, provider, renderer, matrices)
                                 | ETFUtils2.renderEnchanted(texture, provider, light, renderer)
                         ) {
                             //reset render layer stuff behind the scenes if special renders occurred

@@ -64,7 +64,7 @@ public abstract class MixinModelPartSodium {
                             }
                             render(matrixStack, a2, part, b, overlay, color);
                         };
-                        if (ETFUtils2.renderEmissive(texture, provider, renderer) |
+                        if (ETFUtils2.renderEmissive(texture, provider, renderer, matrixStack) |
                                 ETFUtils2.renderEnchanted(texture, provider, light, renderer)) {
                             //reset render layer stuff behind the scenes if special renders occurred
                             //todo check the 1.21 stuff is needed for sodium

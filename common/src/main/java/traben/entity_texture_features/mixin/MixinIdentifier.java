@@ -14,7 +14,7 @@ import traben.entity_texture_features.utils.ETFUtils2;
 public abstract class MixinIdentifier {
 
 
-    @Inject(method = "isValidPath", cancellable = true, at = @At("RETURN"))
+    @Inject(method = "isValidPath", cancellable = true, at = @At("RETURN"), require = 0)
     private static void etf$illegalPathOverride(String path, CallbackInfoReturnable<Boolean> cir) {
         if (ETF.config().getConfig() != null) {
             if (ETF.config().getConfig().illegalPathSupportMode != ETFConfig.IllegalPathMode.None) {

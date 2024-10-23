@@ -1,5 +1,8 @@
 [**ETF Changelog:**]
 
+
+minecraftVersion property
+
 [6.2.5]
 - fixed a logical error that would make spawn locked properties occasionally override the fact that non spawn locked properties were still present and still needed future updates.
 - fixed block entities not updating when using non spawn locked properties.

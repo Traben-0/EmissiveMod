@@ -151,7 +151,7 @@ public class ETFPlayerTexture {
         for (int x = boundsToCheck[0]; x <= boundsToCheck[2]; x++) {
             for (int y = boundsToCheck[1]; y <= boundsToCheck[3]; y++) {
                 if (baseSkin.getLuminanceOrAlpha(x, y) != 0) {
-                    matchColors.add(baseSkin.getPixelRGBA(x, y));
+                    matchColors.add(ETFUtils2.getPixel(baseSkin, x, y));
                 }
             }
         }
@@ -168,8 +168,8 @@ public class ETFPlayerTexture {
             }
             for (int x = 0; x < texture.getWidth(); x++) {
                 for (int y = 0; y < texture.getHeight(); y++) {
-                    if (!matchColors.contains(texture.getPixelRGBA(x, y))) {
-                        texture.setPixelRGBA(x, y, 0);
+                    if (!matchColors.contains(ETFUtils2.getPixel(texture, x, y))) {
+                         ETFUtils2.setPixel(texture,x, y, 0);
                     }
                 }
             }
@@ -218,7 +218,7 @@ public class ETFPlayerTexture {
         upper:
         for (int x = 0; x < imageToCheck.getWidth(); x++) {
             for (int y = 0; y < imageToCheck.getHeight(); y++) {
-                if (imageToCheck.getPixelRGBA(x, y) != 0) {
+                if (ETFUtils2.getPixel(imageToCheck, x, y) != 0) {
                     foundAPixel = true;
                     break upper;
                 }
@@ -407,7 +407,7 @@ public class ETFPlayerTexture {
         int copyToYRelative = copyToY - y1;
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
-                dest.setPixelRGBA(x + copyToXRelative, y + copyToYRelative, source.getPixelRGBA(x, y));
+                ETFUtils2.setPixel(dest, x + copyToXRelative, y + copyToYRelative, ETFUtils2.getPixel(source, x, y));
             }
         }
     }
@@ -415,7 +415,7 @@ public class ETFPlayerTexture {
     private static void deletePixels(NativeImage source, int x1, int y1, int x2, int y2) {
         for (int x = x1; x <= x2; x++) {
             for (int y = y1; y <= y2; y++) {
-                source.setPixelRGBA(x, y, 0);
+                ETFUtils2.setPixel(source, x, y, 0);
             }
         }
     }
@@ -461,7 +461,7 @@ public class ETFPlayerTexture {
     private static void stripAlphaInclusive(NativeImage image, int x1, int y1, int x2, int y2) {
         for (int i = x1; i <= x2; ++i) {
             for (int j = y1; j <= y2; ++j) {
-                image.setPixelRGBA(i, j, image.getPixelRGBA(i, j) | -16777216);
+                ETFUtils2.setPixel(image, i, j, ETFUtils2.getPixel(image, i, j) | -16777216);
             }
         }
 
@@ -708,18 +708,18 @@ public class ETFPlayerTexture {
 //            ETFUtils2.saveConfig();
 //        }
         if (originalSkin != null) {
-            if (originalSkin.getPixelRGBA(1, 16) == -16776961 &&
-                    originalSkin.getPixelRGBA(0, 16) == -16777089 &&
-                    originalSkin.getPixelRGBA(0, 17) == -16776961 &&
-                    originalSkin.getPixelRGBA(2, 16) == -16711936 &&
-                    originalSkin.getPixelRGBA(3, 16) == -16744704 &&
-                    originalSkin.getPixelRGBA(3, 17) == -16711936 &&
-                    originalSkin.getPixelRGBA(0, 18) == -65536 &&
-                    originalSkin.getPixelRGBA(0, 19) == -8454144 &&
-                    originalSkin.getPixelRGBA(1, 19) == -65536 &&
-                    originalSkin.getPixelRGBA(3, 18) == -1 &&
-                    originalSkin.getPixelRGBA(2, 19) == -1 &&
-                    originalSkin.getPixelRGBA(3, 18) == -1
+            if (ETFUtils2.getPixel(originalSkin, 1, 16) == -16776961 &&
+                    ETFUtils2.getPixel(originalSkin, 0, 16) == -16777089 &&
+                    ETFUtils2.getPixel(originalSkin, 0, 17) == -16776961 &&
+                    ETFUtils2.getPixel(originalSkin, 2, 16) == -16711936 &&
+                    ETFUtils2.getPixel(originalSkin, 3, 16) == -16744704 &&
+                    ETFUtils2.getPixel(originalSkin, 3, 17) == -16711936 &&
+                    ETFUtils2.getPixel(originalSkin, 0, 18) == -65536 &&
+                    ETFUtils2.getPixel(originalSkin, 0, 19) == -8454144 &&
+                    ETFUtils2.getPixel(originalSkin, 1, 19) == -65536 &&
+                    ETFUtils2.getPixel(originalSkin, 3, 18) == -1 &&
+                    ETFUtils2.getPixel(originalSkin, 2, 19) == -1 &&
+                    ETFUtils2.getPixel(originalSkin, 3, 18) == -1
             ) {
 
 
@@ -728,13 +728,13 @@ public class ETFPlayerTexture {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //locate and convert choices to ints
                 int[] choiceBoxChoices = {
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(52, 16)),//blink
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(52, 17)),//jacket choice
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(52, 18)),//jacket height
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(52, 19)),//blink height
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(53, 16)),//cape choice
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(53, 17)),//nose choice
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(53, 18)),//no transparency choice
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 52, 16)),//blink
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 52, 17)),//jacket choice
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 52, 18)),//jacket height
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 52, 19)),//blink height
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 53, 16)),//cape choice
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 53, 17)),//nose choice
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 53, 18)),//no transparency choice
 //                        getSkinPixelColourToNumber(originalSkin.getColor(53, 18)),
 //                        getSkinPixelColourToNumber(originalSkin.getColor(53, 19)),
 //                        getSkinPixelColourToNumber(originalSkin.getColor(54, 16)),
@@ -751,12 +751,18 @@ public class ETFPlayerTexture {
                 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //deprecated old villager nose method
-                boolean noseUpper = (getSkinPixelColourToNumber(originalSkin.getPixelRGBA(43, 13)) == 666 && getSkinPixelColourToNumber(originalSkin.getPixelRGBA(44, 13)) == 666 &&
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(43, 14)) == 666 && getSkinPixelColourToNumber(originalSkin.getPixelRGBA(44, 14)) == 666 &&
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(43, 15)) == 666 && getSkinPixelColourToNumber(originalSkin.getPixelRGBA(44, 15)) == 666);
-                boolean noseLower = (getSkinPixelColourToNumber(originalSkin.getPixelRGBA(11, 13)) == 666 && getSkinPixelColourToNumber(originalSkin.getPixelRGBA(12, 13)) == 666 &&
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(11, 14)) == 666 && getSkinPixelColourToNumber(originalSkin.getPixelRGBA(12, 14)) == 666 &&
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(11, 15)) == 666 && getSkinPixelColourToNumber(originalSkin.getPixelRGBA(12, 15)) == 666);
+                boolean noseUpper = (getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 43, 13)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 44, 13)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 43, 14)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 44, 14)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 43, 15)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 44, 15)) == 666);
+                boolean noseLower = (getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 11, 13)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 12, 13)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 11, 14)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 12, 14)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 11, 15)) == 666
+                        && getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 12, 15)) == 666);
                 hasVillagerNose = noseLower || noseUpper;
                 boolean removeNosePixels = noseUpper;
                 if (noseUpper) {
@@ -803,7 +809,7 @@ public class ETFPlayerTexture {
                         for (int x = bounds[0]; x <= bounds[2]; x++) {
                             int noseX = 0;
                             for (int y = bounds[1]; y <= bounds[3]; y++) {
-                                noseTexture.setPixelRGBA(noseX, noseY, originalSkin.getPixelRGBA(x, y));
+                                ETFUtils2.setPixel(noseTexture, noseX, noseY, ETFUtils2.getPixel(originalSkin, x, y));
                                 noseX++;
                             }
                             noseY++;
@@ -811,15 +817,15 @@ public class ETFPlayerTexture {
                         //copy flip to other side
                         for (int x = 4; x < 8; x++) {
                             for (int y = 0; y < 8; y++) {
-                                noseTexture.setPixelRGBA(x, y, noseTexture.getPixelRGBA(7 - x, y));
+                                ETFUtils2.setPixel(noseTexture, x, y, ETFUtils2.getPixel(noseTexture, 7 - x, y));
                             }
                         }
                         //correct vertical alignment
                         for (int x = 0; x < 8; x++) {
                             for (int y = 0; y < 4; y++) {
-                                int lowerColour = noseTexture.getPixelRGBA(x, y + 4);
-                                noseTexture.setPixelRGBA(x, y + 4, noseTexture.getPixelRGBA(x, y));
-                                noseTexture.setPixelRGBA(x, y, lowerColour);
+                                int lowerColour = ETFUtils2.getPixel(noseTexture, x, y + 4);
+                                ETFUtils2.setPixel(noseTexture, x, y + 4, ETFUtils2.getPixel(noseTexture, x, y));
+                                ETFUtils2.setPixel(noseTexture, x, y, lowerColour);
                             }
                         }
 
@@ -986,10 +992,10 @@ public class ETFPlayerTexture {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //check for marker choices
                 //  1 = Emissives,  2 = Enchanted
-                List<Integer> markerChoices = List.of(getSkinPixelColourToNumber(originalSkin.getPixelRGBA(1, 17)),
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(1, 18)),
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(2, 17)),
-                        getSkinPixelColourToNumber(originalSkin.getPixelRGBA(2, 18)));
+                List<Integer> markerChoices = List.of(getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 1, 17)),
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 1, 18)),
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 2, 17)),
+                        getSkinPixelColourToNumber(ETFUtils2.getPixel(originalSkin, 2, 18)));
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //emissives
                 NativeImage emissiveImage = null;

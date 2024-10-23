@@ -1,6 +1,8 @@
 package traben.entity_texture_features.features.property_reading.properties.optifine_properties;
 
 
+import net.minecraft.client.renderer.entity.LlamaRenderer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.VariantHolder;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Sheep;
@@ -8,7 +10,9 @@ import net.minecraft.world.entity.animal.TropicalFish;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.WoolCarpetBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.features.property_reading.properties.RandomProperty;
@@ -46,7 +50,20 @@ public class ColorProperty extends StringArrayOrRegexProperty {
             if (entity instanceof Wolf wolf) return wolf.getCollarColor().getName();
             if (entity instanceof Sheep sheep) return sheep.getColor().getName();
             if (entity instanceof Llama llama) {
-                DyeColor str = llama.getSwag();
+
+                DyeColor str;
+                #if MC > MC_21
+                if(llama.getBodyArmorItem().is(ItemTags.WOOL_CARPETS)
+                        && llama.getBodyArmorItem().getItem() instanceof BlockItem blockItem
+                        && blockItem.getBlock() instanceof WoolCarpetBlock woolCarpetBlock){
+                    str = woolCarpetBlock.getColor();
+                }else{
+                    str = null;
+                }
+                #else
+                    str = llama.getSwag()
+                #endif;
+
                 if (str != null) {
                     return str.getName();
                 }

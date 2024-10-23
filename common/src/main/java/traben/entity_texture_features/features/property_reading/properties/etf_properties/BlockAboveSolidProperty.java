@@ -45,13 +45,15 @@ public class BlockAboveSolidProperty extends BlocksProperty {
                 return null;
             }
 
-            while (world.getMinBuildHeight() <= mutablePos.getY() && !world.getBlockState(mutablePos).isSolidRender(world, mutablePos)) {
+            int minBuildHeight = #if MC > MC_21 world.getMinY() #else world.getMinBuildHeight() #endif;
+
+            while (minBuildHeight <= mutablePos.getY() && !world.getBlockState(mutablePos).isSolidRender(#if MC < MC_21_2 world, mutablePos #endif)) {
                 if (!world.getBlockState(mutablePos).isAir() && world.canSeeSky(mutablePos.above())) {
                     return null;
                 }
                 mutablePos.move(0, 1, 0);
             }
-            if (world.getMinBuildHeight() > mutablePos.getY()) {
+            if (minBuildHeight > mutablePos.getY()) {
                 return null;
             }
             return new BlockState[]{world.getBlockState(mutablePos)};

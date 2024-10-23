@@ -55,7 +55,7 @@ public class ETFConfigScreenSkinToolPixelSelection extends ETFScreenOldCompat {
         selectedPixels = new HashSet<>();
         for (int x = MODE.startX; x < MODE.startX + 8; x++) {
             for (int y = MODE.startY; y < MODE.startY + 8; y++) {
-                int color = etfParent.currentEditorSkin.getPixelRGBA(x, y);
+                int color = ETFUtils2.getPixel(etfParent.currentEditorSkin, x, y);
                 if (color != 0) {
                     selectedPixels.add(color);
                 }
@@ -90,7 +90,7 @@ public class ETFConfigScreenSkinToolPixelSelection extends ETFScreenOldCompat {
         return new Button((int) ((ETFConfigScreenSkinToolPixelSelection.this.width * 0.35) + (x * pixelSize)), (int) ((ETFConfigScreenSkinToolPixelSelection.this.height * 0.2) + (y * pixelSize)), pixelSize, pixelSize,
                 Component.nullToEmpty(""),
                 (button) -> {
-                    int colorAtPixel = etfParent.currentEditorSkin.getPixelRGBA(x, y);
+                    int colorAtPixel = ETFUtils2.getPixel(etfParent.currentEditorSkin, x, y);
                     if (selectedPixels.contains(colorAtPixel)) {
                         selectedPixels.remove(colorAtPixel);
                     } else {
@@ -120,9 +120,9 @@ public class ETFConfigScreenSkinToolPixelSelection extends ETFScreenOldCompat {
         for (int x = MODE.startX; x < MODE.startX + 8; x++) {
             for (int y = MODE.startY; y < MODE.startY + 8; y++) {
                 if (integerSet.isEmpty()) {
-                    etfParent.currentEditorSkin.setPixelRGBA(x, y, 0);
+                    ETFUtils2.setPixel(etfParent.currentEditorSkin, x, y, 0);
                 } else {
-                    etfParent.currentEditorSkin.setPixelRGBA(x, y, integerSet.get(0));
+                    ETFUtils2.setPixel(etfParent.currentEditorSkin, x, y, integerSet.get(0));
                     integerSet.remove(0);
                 }
             }
@@ -135,7 +135,7 @@ public class ETFConfigScreenSkinToolPixelSelection extends ETFScreenOldCompat {
 
         int pixelSize = (int) (this.height * 0.7 / 64);
 
-        renderGUITexture(currentSkinToRender, (int) ((this.width * 0.35)), (int) ((this.height * 0.2)), (int) ((this.width * 0.35) + (64 * pixelSize)), (int) ((this.height * 0.2) + (64 * pixelSize)));
+        renderGUITexture(context,currentSkinToRender, (int) ((this.width * 0.35)), (int) ((this.height * 0.2)), (int) ((this.width * 0.35) + (64 * pixelSize)), (int) ((this.height * 0.2) + (64 * pixelSize)));
         context.drawString(font, ETF.getTextFromTranslation("config." + MOD_ID + ".skin_select" + (selectedPixels.size() > 64 ? ".warn" : ".hint")), width / 7, (int) (this.height * 0.8), selectedPixels.size() > 64 ? 0xff1515 : 0xFFFFFF);
 
 
@@ -194,10 +194,13 @@ public class ETFConfigScreenSkinToolPixelSelection extends ETFScreenOldCompat {
         entity.yHeadRot = entity.getYRot();
         entity.yHeadRotO = entity.getYRot();
 
-
-//        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        #if MC > MC_21
+        context.drawSpecial((bufferSource) -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.pose(), bufferSource, 15728880));
+        #else
         //noinspection deprecation
         RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.pose(), context.bufferSource(), LightTexture.pack(7, 7)));
+        #endif
+
 //        immediate.draw();
         context.flush();
         entityRenderDispatcher.setRenderShadow(true);

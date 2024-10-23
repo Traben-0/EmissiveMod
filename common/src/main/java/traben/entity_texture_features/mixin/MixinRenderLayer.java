@@ -26,7 +26,7 @@ public abstract class MixinRenderLayer {
                     "entityNoOutline",
                     "entitySmoothCutout",
                     "entityTranslucent(Lnet/minecraft/resources/ResourceLocation;Z)Lnet/minecraft/client/renderer/RenderType;",
-                    "entityTranslucentCull",
+                    #if MC < MC_21_2 "entityTranslucentCull",#endif
                     "entityTranslucentEmissive(Lnet/minecraft/resources/ResourceLocation;Z)Lnet/minecraft/client/renderer/RenderType;",
                     "armorCutoutNoCull",
                     "entityShadow"

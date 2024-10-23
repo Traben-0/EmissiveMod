@@ -90,9 +90,15 @@ public class ETFConfigScreenMain extends TConfigScreenMain {
         }
 
         entityRenderDispatcher.setRenderShadow(false);
+        #if MC > MC_21
+        context.drawSpecial((multiBufferSource) -> {
+            entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.pose(), multiBufferSource, 15728880);
+        });
+        #else
         //noinspection deprecation
         RenderSystem.runAsFancy(() ->
                 entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.pose(), context.bufferSource(), 15728880));
+        #endif
         context.flush();
         entityRenderDispatcher.setRenderShadow(true);
         context.pose().popPose();
@@ -166,17 +172,17 @@ public class ETFConfigScreenMain extends TConfigScreenMain {
         matrixStack.pushPose();
         matrixStack.translate(-0.6, -sin1, 0);
         matrixStack.scale(1 + sin1, 1 + sin1, 1 + sin1);
-        LOGO_CREEPER.renderSimple(matrixStack, context.bufferSource(), YELLOW);
+        LOGO_CREEPER.renderSimple(matrixStack, context.bufferSource #if MC < MC_21_2 () #endif, YELLOW);
         matrixStack.popPose();
         matrixStack.pushPose();
         matrixStack.translate(0, -sin2, 0);
         matrixStack.scale(1 + sin2, 1 + sin2, 1 + sin2);
-        LOGO_CREEPER.renderSimple(matrixStack, context.bufferSource(), RED);
+        LOGO_CREEPER.renderSimple(matrixStack, context.bufferSource #if MC < MC_21_2 () #endif, RED);
         matrixStack.popPose();
         matrixStack.pushPose();
         matrixStack.translate(0.6, -sin3, 0);
         matrixStack.scale(1 + sin3, 1 + sin3, 1 + sin3);
-        LOGO_CREEPER.renderSimple(matrixStack, context.bufferSource(), BLUE);
+        LOGO_CREEPER.renderSimple(matrixStack, context.bufferSource #if MC < MC_21_2 () #endif,  BLUE);
         matrixStack.popPose();
 
         Lighting.setupFor3DItems();

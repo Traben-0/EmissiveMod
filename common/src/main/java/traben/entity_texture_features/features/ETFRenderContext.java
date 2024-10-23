@@ -22,6 +22,16 @@ public class ETFRenderContext {
 
     public static boolean renderingFeatures = false;
     private static boolean allowRenderLayerTextureModify = true;
+
+    public static boolean doesInflateEmissiveLayer() {
+        return inflateEmissiveLayer;
+    }
+
+    public static void setInflateEmissiveLayer(final boolean inflateEmissiveLayer) {
+        ETFRenderContext.inflateEmissiveLayer = inflateEmissiveLayer;
+    }
+
+    private static boolean inflateEmissiveLayer = false;
     private static boolean limitModifyToProperties = false;
     private static ETFEntity currentEntity = null;
     private static int currentModelPartDepth = 0;
@@ -84,7 +94,7 @@ public class ETFRenderContext {
         return false;
     }
 
-    public static boolean shouldEmissiveUseCullingLayer() {
+    public static boolean shouldEmissiveUseCullingLayer() {//todo required post 1.21.2?
         if (currentEntity != null) {
             return currentEntity.etf$isBlockEntity();
         } else {
@@ -171,7 +181,7 @@ public class ETFRenderContext {
 
                     RenderType forReturn = switch (layer) {
                         case TRANSLUCENT -> RenderType.entityTranslucent(texture.get());
-                        case TRANSLUCENT_CULL -> RenderType.entityTranslucentCull(texture.get());
+                        case TRANSLUCENT_CULL -> #if MC < MC_21_2  RenderType.entityTranslucentCull(texture.get()); #else RenderType.entityTranslucent(texture.get()); #endif
                         case END -> RenderType.endGateway();
                         case OUTLINE -> RenderType.outline(texture.get());
                     };

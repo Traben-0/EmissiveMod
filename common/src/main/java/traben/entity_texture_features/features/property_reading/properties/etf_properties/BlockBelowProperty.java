@@ -40,10 +40,13 @@ public class BlockBelowProperty extends BlocksProperty {
             Level world = entity.etf$getWorld();
             BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
             mutablePos.set(entity.etf$getBlockPos());
-            while (world.getMinBuildHeight() <= mutablePos.getY() && world.getBlockState(mutablePos).isAir()) {
+
+            int minBuildHeight = #if MC > MC_21 world.getMinY() #else world.getMinBuildHeight() #endif;
+
+            while (minBuildHeight <= mutablePos.getY() && world.getBlockState(mutablePos).isAir()) {
                 mutablePos.move(0, -1, 0);
             }
-            if (world.getMinBuildHeight() > mutablePos.getY()) {
+            if (minBuildHeight > mutablePos.getY()) {
                 return null;
             }
             return new BlockState[]{world.getBlockState(mutablePos)};

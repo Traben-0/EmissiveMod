@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.WidgetSprites;
 #endif
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
@@ -103,7 +104,7 @@ public abstract class MixinPackScreen extends Screen {
             @Override
             public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
                 ResourceLocation identifier = this.isHoveredOrFocused() ? etf$FOCUSED : etf$UNFOCUSED;
-                context.blit(identifier, this.getX(), this.getY(), 0, 0, this.width, this.height, this.width, this.height);
+                context.blit(#if MC > MC_21 RenderType::guiTextured, #endif identifier, this.getX(), this.getY(), 0, 0, this.width, this.height, this.width, this.height);
             }
 
         });

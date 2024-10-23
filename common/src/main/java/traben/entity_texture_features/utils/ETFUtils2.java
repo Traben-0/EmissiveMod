@@ -1,5 +1,6 @@
 package traben.entity_texture_features.utils;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.ETF;
@@ -51,6 +52,22 @@ public abstract class ETFUtils2 {
         #endif
     }
 
+    public static void setPixel(NativeImage image, int x, int y, int color) {
+        #if MC > MC_21
+        image.setPixel(x, y, color);
+        #else
+        image.setPixelRGBA(x, y, color);
+        #endif
+    }
+
+    public static int getPixel(NativeImage image, int x, int y) {
+        #if MC > MC_21
+        return image.getPixel(x, y);
+        #else
+        return image.getPixelRGBA(x, y);
+        #endif
+    }
+
     public static ResourceLocation getETFVariantNotNullForInjector(ResourceLocation identifier) {
         //do not modify texture
         if (identifier == null
@@ -70,7 +87,7 @@ public abstract class ETFUtils2 {
         return modified == null ? identifier : modified;
     }
 
-    public static boolean renderEmissive(ETFTexture texture, MultiBufferSource provider, RenderMethodForOverlay renderer) {
+    public static boolean renderEmissive(ETFTexture texture, MultiBufferSource provider, RenderMethodForOverlay renderer, PoseStack matrices) {
         if (!ETF.config().getConfig().canDoEmissiveTextures()) return false;
         ResourceLocation emissive = texture.getEmissiveIdentifierOfCurrentState();
         if (emissive != null) {
@@ -80,14 +97,19 @@ public abstract class ETFUtils2 {
             VertexConsumer emissiveConsumer = provider.getBuffer(
                     ETFRenderContext.canRenderInBrightMode() ?
                             RenderType.beaconBeam(emissive, true) :
-                            ETFRenderContext.shouldEmissiveUseCullingLayer() ?
-                                    RenderType.entityTranslucentCull(emissive) :
+                            #if MC < MC_21_2 ETFRenderContext.shouldEmissiveUseCullingLayer() ?
+                                    RenderType.entityTranslucentCull(emissive) : #endif
                                     RenderType.entityTranslucent(emissive));
 
             if (wasAllowed) ETFRenderContext.allowRenderLayerTextureModify();
 
             ETFRenderContext.startSpecialRenderOverlayPhase();
+
+            matrices.pushPose();
+            if(ETFRenderContext.doesInflateEmissiveLayer()) matrices.scale(1.01f,1.01f,1.01f);
             renderer.render(emissiveConsumer, ETF.EMISSIVE_FEATURE_LIGHT_VALUE);
+            matrices.popPose();
+
             ETFRenderContext.endSpecialRenderOverlayPhase();
             return true;
         }
