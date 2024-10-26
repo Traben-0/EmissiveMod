@@ -87,7 +87,7 @@ public abstract class ETFUtils2 {
         return modified == null ? identifier : modified;
     }
 
-    public static boolean renderEmissive(ETFTexture texture, MultiBufferSource provider, RenderMethodForOverlay renderer, PoseStack matrices) {
+    public static boolean renderEmissive(ETFTexture texture, MultiBufferSource provider, RenderMethodForOverlay renderer) {
         if (!ETF.config().getConfig().canDoEmissiveTextures()) return false;
         ResourceLocation emissive = texture.getEmissiveIdentifierOfCurrentState();
         if (emissive != null) {
@@ -104,12 +104,7 @@ public abstract class ETFUtils2 {
             if (wasAllowed) ETFRenderContext.allowRenderLayerTextureModify();
 
             ETFRenderContext.startSpecialRenderOverlayPhase();
-
-            matrices.pushPose();
-            if(ETFRenderContext.doesInflateEmissiveLayer()) matrices.scale(1.01f,1.01f,1.01f);
             renderer.render(emissiveConsumer, ETF.EMISSIVE_FEATURE_LIGHT_VALUE);
-            matrices.popPose();
-
             ETFRenderContext.endSpecialRenderOverlayPhase();
             return true;
         }

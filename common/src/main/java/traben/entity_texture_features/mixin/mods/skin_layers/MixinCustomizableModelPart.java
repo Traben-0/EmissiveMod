@@ -54,7 +54,7 @@ public abstract class MixinCustomizableModelPart {
                         if (provider != null && layer != null) {
                             //attempt special renders as eager OR checks
                             ETFUtils2.RenderMethodForOverlay renderer = (a, b) -> render(vanillaModel, poseStack, a, b, overlay, red, green, blue, alpha);
-                            if (ETFUtils2.renderEmissive(texture, provider, renderer, poseStack) |
+                            if (ETFUtils2.renderEmissive(texture, provider, renderer) |
                                     ETFUtils2.renderEnchanted(texture, provider, light, renderer)) {
                                 //reset render layer stuff behind the scenes if special renders occurred
                                 provider.getBuffer(layer);

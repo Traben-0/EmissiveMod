@@ -23,15 +23,7 @@ public class ETFRenderContext {
     public static boolean renderingFeatures = false;
     private static boolean allowRenderLayerTextureModify = true;
 
-    public static boolean doesInflateEmissiveLayer() {
-        return inflateEmissiveLayer;
-    }
 
-    public static void setInflateEmissiveLayer(final boolean inflateEmissiveLayer) {
-        ETFRenderContext.inflateEmissiveLayer = inflateEmissiveLayer;
-    }
-
-    private static boolean inflateEmissiveLayer = false;
     private static boolean limitModifyToProperties = false;
     private static ETFEntity currentEntity = null;
     private static int currentModelPartDepth = 0;
