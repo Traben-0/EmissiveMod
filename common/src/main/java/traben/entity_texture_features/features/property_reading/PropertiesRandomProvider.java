@@ -80,7 +80,9 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
                 return new PropertiesRandomProvider(propertiesFileIdentifier, propertyRules);
             }
         }catch (ETFException etf){
-            ETFUtils2.logWarn("Ignoring properties file with problem: " + propertiesFileIdentifier + "\n" + etf, false);
+            if (!propertiesFileIdentifier.toString().contains("optifine/cit/")) {
+                ETFUtils2.logWarn("Ignoring properties file with problem: " + propertiesFileIdentifier + "\n" + etf, false);
+            }
         }catch (Exception e) {
             ETFUtils2.logWarn("Ignoring properties file that caused unexpected Exception: " + propertiesFileIdentifier + "\n" + e, false);
             //noinspection CallToPrintStackTrace
@@ -228,13 +230,11 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
         if (entityToBeTested == null) return 0;
         UUID id = entityToBeTested.etf$getUuid();
         boolean entityHasBeenTestedBefore = entityCanUpdate.containsKey(id);
-        if (entityHasBeenTestedBefore) {
-            //return andNothingElse
-            int result = testEntityAgainstRules(entityToBeTested);
-            if (result > 0) return result;
-        } else {
+
+        int result= testEntityAgainstRules(entityToBeTested, entityHasBeenTestedBefore);
+
+        if (!entityHasBeenTestedBefore) {
             //return but capture spawn conditions of first time entity
-            int result = testEntityAgainstRules(entityToBeTested);
             //must be done separate to, and after, above method as it sets the entityCanUpdate return
             if (entityCanUpdate.getBoolean(id)) {
                 for (RandomPropertyRule rule : propertyRules) {
@@ -242,15 +242,16 @@ public class PropertiesRandomProvider implements ETFApi.ETFVariantSuffixProvider
                     rule.cacheEntityInitialResultsOfNonUpdatingProperties(entityToBeTested);
                 }
             }
-            if (result > 0) return result;
         }
+        if (result > 0) return result;
+
         onMeetsRule.accept(entityToBeTested, null);
         return 0;
     }
 
-    private int testEntityAgainstRules(final ETFEntity entityToBeTested) {
+    private int testEntityAgainstRules(final ETFEntity entityToBeTested, boolean isUpdate) {
         for (RandomPropertyRule rule : propertyRules) {
-            if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, entityCanUpdate.containsKey(entityToBeTested.etf$getUuid()), entityCanUpdate)) {
+            if (rule.doesEntityMeetConditionsOfThisCase(entityToBeTested, isUpdate, entityCanUpdate)) {
                 onMeetsRule.accept(entityToBeTested, rule);
                 return rule.getVariantSuffixFromThisCase(entityRandomSeedFunction.toInt(entityToBeTested));
             }

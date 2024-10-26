@@ -96,7 +96,7 @@ public class RandomPropertyRule {
             }
             WEIGHT_TOTAL = total;
         }
-        UPDATES = Arrays.stream(properties).anyMatch(RandomProperty::canPropertyUpdate);
+        UPDATES = Arrays.stream(PROPERTIES_TO_TEST).anyMatch(RandomProperty::canPropertyUpdate);
     }
 
     public Set<Integer> getSuffixSet() {
@@ -116,8 +116,7 @@ public class RandomPropertyRule {
             }
             return true;
         } catch (Exception e) {
-            ETFUtils2.logWarn("Random Property file [" +
-                    PROPERTY_FILE + "] rule # [" + RULE_NUMBER + "] failed with Exception:\n" + e.getMessage());
+            ETFUtils2.logWarn("Random Property file [" + PROPERTY_FILE + "] rule # [" + RULE_NUMBER + "] failed with Exception:\n" + e.getMessage());
             //fail this test
             return false;
         }

@@ -1,6 +1,7 @@
-package traben.entity_texture_features.features.property_reading.properties.optifine_properties;
+package traben.entity_texture_features.features.property_reading.properties.etf_properties;
 
 import org.jetbrains.annotations.NotNull;
+import traben.entity_texture_features.features.property_reading.properties.optifine_properties.BlocksProperty;
 
 import java.util.Properties;
 

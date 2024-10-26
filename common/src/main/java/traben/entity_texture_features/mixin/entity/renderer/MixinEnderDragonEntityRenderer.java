@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EnderDragonRenderState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import org.spongepowered.asm.mixin.Final;
@@ -15,8 +16,12 @@ import traben.entity_texture_features.ETF;
 import traben.entity_texture_features.utils.ETFUtils2;
 
 
+
+
+
+
 @Mixin(EnderDragonRenderer.class)
-public abstract class MixinEnderDragonEntityRenderer extends EntityRenderer<EnderDragon> {
+public abstract class MixinEnderDragonEntityRenderer extends #if MC > MC_21 EntityRenderer<EnderDragon, EnderDragonRenderState> #else EntityRenderer<EnderDragon> #endif {
 
     @Final
     @Shadow
@@ -40,8 +45,13 @@ public abstract class MixinEnderDragonEntityRenderer extends EntityRenderer<Ende
     }
 
     @ModifyArg(
-            method = "render(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;"))
+            method =
+        #if MC > MC_21
+                    "render(Lnet/minecraft/client/renderer/entity/state/EnderDragonRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+        #else
+                    "render(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+        #endif
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;"))
     private RenderType etf$returnAlteredTexture(RenderType texturedRenderLayer) {
         if (ETF.config().getConfig().canDoCustomTextures()) {
             try {

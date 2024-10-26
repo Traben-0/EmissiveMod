@@ -1,7 +1,5 @@
 package traben.entity_texture_features.mixin.entity.renderer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +24,7 @@ public abstract class MixinEntityRenderer<T extends Entity> {
     }
 
     @Inject(method = "render", at = @At(value = "HEAD"))
-    private void etf$protectPostRenderersLikeNametag(final T entity, final float f, final float g, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i, final CallbackInfo ci) {
+    private void etf$protectPostRenderersLikeNametag(final CallbackInfo ci) {
         ETFRenderContext.preventRenderLayerTextureModify();
     }
 

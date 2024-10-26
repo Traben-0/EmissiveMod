@@ -3,6 +3,7 @@ package traben.tconfig.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -94,7 +95,7 @@ public abstract class TConfigScreenMain extends TConfigScreen {
         if (!modIcons.isEmpty()) {
             int ix = this.width - (modIcons.size() * 34);
             for (ResourceLocation modIcon : modIcons) {
-                context.blit(modIcon, ix, 2, 0, 0, 32, 32, 32, 32);
+                context.blit(#if MC >= MC_20_6 RenderType::guiTextured, #endif modIcon, ix, 2, 0, 0, 32, 32, 32, 32);
                 ix += 34;
             }
         }

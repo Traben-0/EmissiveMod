@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -189,7 +190,7 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
                     (button) -> {
                         int colour = thisETFPlayerTexture.noseType.next().getNosePixelColour();
 
-                        currentEditorSkin.setPixelRGBA(53, 17, colour);
+                        ETFUtils2.setPixel(currentEditorSkin, 53, 17, colour);
                         if (thisETFPlayerTexture.noseType.next().appliesTextureOverlay()) {
                             applyExistingOverlayToSkin(BOXES_OVERLAY);
                         }
@@ -223,7 +224,7 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
                         button.setMessage(Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.transparency.button").getString() +
                                 booleanAsOnOff(thisETFPlayerTexture.wasForcedSolid)));
 
-                        currentEditorSkin.setPixelRGBA(53, 18, getPixelColour(thisETFPlayerTexture.wasForcedSolid ? 0 : 1));
+                        ETFUtils2.setPixel(currentEditorSkin, 53, 18, getPixelColour(thisETFPlayerTexture.wasForcedSolid ? 0 : 1));
 
                         thisETFPlayerTexture.changeSkinToThisForTool(currentEditorSkin);
                         updateButtons();
@@ -237,7 +238,7 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
 
                         button.setMessage(coat.getTitle());
 
-                        currentEditorSkin.setPixelRGBA(52, 17, coat.getCoatPixelColour());
+                        ETFUtils2.setPixel(currentEditorSkin, 52, 17, coat.getCoatPixelColour());
 
                         thisETFPlayerTexture.changeSkinToThisForTool(currentEditorSkin);
                         updateButtons();
@@ -254,7 +255,7 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
                         } else {
                             lengthChoice = thisETFPlayerTexture.coatLength + 1;
                         }
-                        currentEditorSkin.setPixelRGBA(52, 18, getPixelColour(lengthChoice));
+                        ETFUtils2.setPixel(currentEditorSkin, 52, 18, getPixelColour(lengthChoice));
                         thisETFPlayerTexture.changeSkinToThisForTool(currentEditorSkin);
 
                         button.setMessage(Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.coat_length.title").getString()
@@ -273,10 +274,10 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
                                 && blink != BlinkType.WHOLE_FACE_TWO
                                 && blink != BlinkType.WHOLE_FACE) {
                             //set height choice to 0
-                            currentEditorSkin.setPixelRGBA(52, 19, getPixelColour(0));
-                        } else if (currentEditorSkin.getPixelRGBA(52, 19) > blink.getMaxEyePixelHeight()) {
+                            ETFUtils2.setPixel(currentEditorSkin, 52, 19, getPixelColour(0));
+                        } else if (ETFUtils2.getPixel(currentEditorSkin, 52, 19) > blink.getMaxEyePixelHeight()) {
                             //set height choice to the highest possible if too big for new type choice
-                            currentEditorSkin.setPixelRGBA(52, 19, getPixelColour(blink.getMaxEyePixelHeight()));
+                            ETFUtils2.setPixel(currentEditorSkin, 52, 19, getPixelColour(blink.getMaxEyePixelHeight()));
                         }
 
                         var overlay = blink.getExampleOverlay();
@@ -284,7 +285,7 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
                             applyExistingOverlayToSkin(overlay);
                         }
 
-                        currentEditorSkin.setPixelRGBA(52, 16, blink.getBlinkPixelColour());
+                        ETFUtils2.setPixel(currentEditorSkin, 52, 16, blink.getBlinkPixelColour());
 
                         thisETFPlayerTexture.changeSkinToThisForTool(currentEditorSkin);
                         updateButtons();
@@ -301,7 +302,7 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
                         } else {
                             heightChoice = thisETFPlayerTexture.blinkHeight + 1;
                         }
-                        currentEditorSkin.setPixelRGBA(52, 19, getPixelColour(heightChoice));
+                        ETFUtils2.setPixel(currentEditorSkin, 52, 19, getPixelColour(heightChoice));
                         thisETFPlayerTexture.changeSkinToThisForTool(currentEditorSkin);
 
                         button.setMessage(Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.blink_height.title").getString()
@@ -311,19 +312,19 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
 
             emissiveButton = getETFButton((int) (this.width * 0.25), (int) (this.height * 0.5), (int) (this.width * 0.42), 20,
                     Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.emissive_enable.button").getString()
-                            + (currentEditorSkin.getPixelRGBA(1, 17) == getPixelColour(1) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()),
+                            + (ETFUtils2.getPixel(currentEditorSkin, 1, 17) == getPixelColour(1) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()),
                     (button) -> {
 
 
                         if (thisETFPlayerTexture.hasEmissives) {
-                            currentEditorSkin.setPixelRGBA(1, 17, 0);
+                            ETFUtils2.setPixel(currentEditorSkin, 1, 17, 0);
                         } else {
-                            currentEditorSkin.setPixelRGBA(1, 17, getPixelColour(1));
+                            ETFUtils2.setPixel(currentEditorSkin, 1, 17, getPixelColour(1));
                         }
 
                         thisETFPlayerTexture.changeSkinToThisForTool(currentEditorSkin);
                         button.setMessage(Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.emissive_enable.button").getString()
-                                + (currentEditorSkin.getPixelRGBA(1, 17) == getPixelColour(1) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()));
+                                + (ETFUtils2.getPixel(currentEditorSkin, 1, 17) == getPixelColour(1) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()));
                         updateButtons();
                     }, ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.emissive_enable.tooltip")
             );
@@ -335,19 +336,19 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
 
             enchantButton = getETFButton((int) (this.width * 0.25), (int) (this.height * 0.6), (int) (this.width * 0.42), 20,
                     Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.enchant_enable.button").getString()
-                            + (currentEditorSkin.getPixelRGBA(1, 18) == getPixelColour(2) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()),
+                            + (ETFUtils2.getPixel(currentEditorSkin, 1, 18) == getPixelColour(2) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()),
                     (button) -> {
 
 
                         if (thisETFPlayerTexture.hasEnchant) {
-                            currentEditorSkin.setPixelRGBA(1, 18, 0);
+                            ETFUtils2.setPixel(currentEditorSkin, 1, 18, 0);
                         } else {
-                            currentEditorSkin.setPixelRGBA(1, 18, getPixelColour(2));
+                            ETFUtils2.setPixel(currentEditorSkin, 1, 18, getPixelColour(2));
                         }
 
                         thisETFPlayerTexture.changeSkinToThisForTool(currentEditorSkin);
                         button.setMessage(Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.enchant_enable.button").getString()
-                                + (currentEditorSkin.getPixelRGBA(1, 18) == getPixelColour(2) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()));
+                                + (ETFUtils2.getPixel(currentEditorSkin, 1, 18) == getPixelColour(2) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()));
                         updateButtons();
                     }, ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.enchant_enable.tooltip")
             );
@@ -406,20 +407,20 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
         if (emissiveButton != null) {
             emissiveButton.active = activeFeatures;
             emissiveButton.setMessage(Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.emissive_enable.button").getString()
-                    + (currentEditorSkin.getPixelRGBA(1, 17) == getPixelColour(1) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()));
+                    + (ETFUtils2.getPixel(currentEditorSkin, 1, 17) == getPixelColour(1) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()));
         }
         if (emissiveSelectButton != null) {
             emissiveSelectButton.active = activeFeatures
-                    && currentEditorSkin.getPixelRGBA(1, 17) == getPixelColour(1);
+                    && ETFUtils2.getPixel(currentEditorSkin, 1, 17) == getPixelColour(1);
         }
         if (enchantButton != null) {
             enchantButton.active = activeFeatures;
             enchantButton.setMessage(Component.nullToEmpty(ETF.getTextFromTranslation("config." + MOD_ID + ".player_skin_editor.enchant_enable.button").getString()
-                    + (currentEditorSkin.getPixelRGBA(1, 18) == getPixelColour(2) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()));
+                    + (ETFUtils2.getPixel(currentEditorSkin, 1, 18) == getPixelColour(2) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF).getString()));
         }
         if (enchantSelectButton != null) {
             enchantSelectButton.active = activeFeatures
-                    && currentEditorSkin.getPixelRGBA(1, 18) == getPixelColour(2);
+                    && ETFUtils2.getPixel(currentEditorSkin, 1, 18) == getPixelColour(2);
         }
 //        if (capeButton != null) {
 //            capeButton.active = activeFeatures;
@@ -494,8 +495,8 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
             try {
                 for (int x = 0; x < currentEditorSkin.getWidth(); x++) {
                     for (int y = 0; y < currentEditorSkin.getHeight(); y++) {
-                        if (overlayImage.getPixelRGBA(x, y) != 0) {
-                            currentEditorSkin.setPixelRGBA(x, y, overlayImage.getPixelRGBA(x, y));
+                        if (ETFUtils2.getPixel(overlayImage, x, y) != 0) {
+                            ETFUtils2.setPixel(currentEditorSkin, x, y, ETFUtils2.getPixel(overlayImage, x, y));
                         }
                     }
                 }
@@ -571,7 +572,12 @@ public class ETFConfigScreenSkinTool extends ETFScreenOldCompat {
 
 //        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         //noinspection deprecation
+        #if MC > MC_21
+        context.drawSpecial((bufferSource) -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.pose(), bufferSource, 15728880));
+        #else
+
         RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.pose(), context.bufferSource(), 15728880));
+        #endif
 //        immediate.draw();
         context.flush();
         entityRenderDispatcher.setRenderShadow(true);

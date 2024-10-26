@@ -10,6 +10,7 @@ import traben.entity_texture_features.features.property_reading.properties.etf_p
 import traben.entity_texture_features.features.property_reading.properties.optifine_properties.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Properties;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -43,7 +44,10 @@ public class RandomProperties {
                 RandomPropertyFactory.of("teams", "config.entity_texture_features.property_explanation.team", TeamProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("blockSpawned", "config.entity_texture_features.property_explanation.block_spawned", BlockSpawnedProperty::getPropertyOrNull, true),
                 RandomPropertyFactory.of("nbtVehicle", "config.entity_texture_features.property_explanation.nbt_vehicle", NBTVehicleProperty::getPropertyOrNull),
-
+                RandomPropertyFactory.of("blockAbove", "config.entity_texture_features.property_explanation.block_above", BlockAboveProperty::getPropertyOrNull),
+                RandomPropertyFactory.of("blockAboveSolid", "config.entity_texture_features.property_explanation.block_above_solid", BlockAboveSolidProperty::getPropertyOrNull),
+                RandomPropertyFactory.of("blockBelow", "config.entity_texture_features.property_explanation.block_below", BlockBelowProperty::getPropertyOrNull),
+                RandomPropertyFactory.of("blockBelowSolid", "config.entity_texture_features.property_explanation.block_below_solid", BlockBelowSolidProperty::getPropertyOrNull),
 
                 //etf externals
                 RandomPropertyFactory.of("hour", "config.entity_texture_features.property_explanation.hour", HourProperty::getPropertyOrNull),
@@ -59,6 +63,8 @@ public class RandomProperties {
                 RandomPropertyFactory.of("textureRule", "config.entity_texture_features.property_explanation.texture_rule", TextureRuleIndexProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("modLoaded", "config.entity_texture_features.property_explanation.mod_rule", ModLoadedProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("nbtClient", "config.entity_texture_features.property_explanation.nbt_client", NBTClientProperty::getPropertyOrNull),
+                RandomPropertyFactory.of("minecraftVersion", "config.entity_texture_features.property_explanation.mc_version", MinecraftVersionProperty::getPropertyOrNull),
+
 
                 //OptiFine properties
                 RandomPropertyFactory.of("baby", "config.entity_texture_features.property_explanation.baby", BabyProperty::getPropertyOrNull),
@@ -78,7 +84,9 @@ public class RandomProperties {
     }
 
     public static void forEachProperty(@NotNull Consumer<RandomPropertyFactory> consumer) {
-        REGISTERED_PROPERTIES.forEach(consumer);
+        REGISTERED_PROPERTIES.stream()
+                .sorted(Comparator.comparing(RandomPropertyFactory::getPropertyId))
+                .forEach(consumer);
     }
 
     /**

@@ -212,9 +212,9 @@ public abstract class ETFTextureVariator {
             UUID id = entity.etf$getUuid();
             int knownSuffix = entitySuffixMap.getInt(id);
             if (knownSuffix != -1) {
-                if (source != ETFManager.TextureSource.BLOCK_ENTITY) {
+//                if (source != ETFManager.TextureSource.BLOCK_ENTITY) { no idea why, some legacy limitation?
                     checkIfShouldExpireEntity(entity,id);
-                }
+//                }
                 //System.out.println("known = "+knownSuffix);
                 return variantMap.get(knownSuffix);
             }

@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,8 +26,16 @@ import traben.entity_texture_features.features.ETFManager;
 import traben.entity_texture_features.features.ETFRenderContext;
 import traben.entity_texture_features.utils.ETFUtils2;
 
+#if MC > MC_21
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+
+public class ETFPlayerFeatureRenderer<T extends PlayerRenderState, M extends PlayerModel> extends RenderLayer<T, M> {
+#else
+import net.minecraft.world.entity.player.Player;
 
 public class ETFPlayerFeatureRenderer<T extends Player, M extends PlayerModel<T>> extends RenderLayer<T, M> {
+#endif
+
     protected static final ModelPart villagerNose = getModelData(new CubeDeformation(0)).getRoot().getChild("nose").bake(64, 64);
     protected static final ModelPart textureNose = getModelData(new CubeDeformation(0)).getRoot().getChild("textureNose").bake(8, 8);
     protected static final ModelPart jacket = getModelData(new CubeDeformation(0)).getRoot().getChild("jacket").bake(64, 64);
@@ -109,7 +116,7 @@ public class ETFPlayerFeatureRenderer<T extends Player, M extends PlayerModel<T>
             }
         } else if (playerTexture.texturedNoseIdentifier != null) {
 //            textureNose.copyTransform(model.head);
-            VertexConsumer noseVertex = vertexConsumerProvider.getBuffer(RenderType.entityTranslucentCull(playerTexture.texturedNoseIdentifier));
+            VertexConsumer noseVertex = vertexConsumerProvider.getBuffer(RenderType.entityTranslucent(playerTexture.texturedNoseIdentifier));
             textureNose.render(matrixStack, noseVertex, light, OverlayTexture.NO_OVERLAY #if MC < MC_21 , 1F, 1F, 1F, 1F #endif);
             if (playerTexture.texturedNoseIdentifierEmissive != null) {
 //                textureNose.copyTransform(model.head);
@@ -117,7 +124,7 @@ public class ETFPlayerFeatureRenderer<T extends Player, M extends PlayerModel<T>
                 if (ETFManager.getEmissiveMode() == ETFConfig.EmissiveRenderModes.BRIGHT) {
                     noseVertex_e = vertexConsumerProvider.getBuffer(RenderType.beaconBeam(playerTexture.texturedNoseIdentifierEmissive, true));
                 } else {
-                    noseVertex_e = vertexConsumerProvider.getBuffer(RenderType.entityTranslucentCull(playerTexture.texturedNoseIdentifierEmissive));
+                    noseVertex_e = vertexConsumerProvider.getBuffer(RenderType.entityTranslucent(playerTexture.texturedNoseIdentifierEmissive));
                 }
                 textureNose.render(matrixStack, noseVertex_e, ETF.EMISSIVE_FEATURE_LIGHT_VALUE, OverlayTexture.NO_OVERLAY #if MC < MC_21 , 1F, 1F, 1F, 1F #endif);
             }
@@ -129,9 +136,13 @@ public class ETFPlayerFeatureRenderer<T extends Player, M extends PlayerModel<T>
         }
     }
 
+#if MC > MC_21
+    @Override
+    public void render(final PoseStack matrices, final MultiBufferSource vertexConsumers, final int light, final T entityRenderState, final float f, final float g) {
+#else
     @Override
     public void render(PoseStack matrices, MultiBufferSource vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-
+#endif
         if (ETF.config().getConfig().skinFeaturesEnabled && skinHolder != null) {
             ETFRenderContext.preventRenderLayerTextureModify();
 

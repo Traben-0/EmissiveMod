@@ -19,8 +19,22 @@ public abstract class ETF3DSkinLayersUtil {
 
     // todo ensure rendering method is kept up to date with how 3D skin layers mod does it
     // copy of 3D skin layers hand rendering code as ETF needs to be able to render it at will with a custom VertexConsumer
-    public static void renderHand(PlayerRenderer instance, PoseStack poseStack, VertexConsumer vertexConsumer, int i, AbstractClientPlayer abstractClientPlayer, ModelPart arm, ModelPart sleeve)
+    public static void renderHand(PlayerRenderer instance, PoseStack poseStack, VertexConsumer vertexConsumer, int i, AbstractClientPlayer abstractClientPlayer, #if MC > MC_21 ModelPart armAndSleeve #else ModelPart arm, ModelPart sleeve #endif)
             throws NoClassDefFoundError {
+
+
+        #if MC > MC_21
+        return;//todo 3d skin layers for 1.21.2
+        //safe calls to get arm sleeve part
+//        var sleeve = armAndSleeve.hasChild("right_sleeve")
+//                ? armAndSleeve.getChild("right_sleeve")
+//                : armAndSleeve.hasChild("left_sleeve")
+//                    ? armAndSleeve.getChild("left_sleeve")
+//                    : null;
+//        if (sleeve == null) return;
+
+        #else
+
         boolean rightSleeve;
         label59:
         {
@@ -43,7 +57,11 @@ public abstract class ETF3DSkinLayersUtil {
             boolean thinArms = ((PlayerEntityModelAccessor) instance.getModel()).hasThinArms();
             if (SkinUtil.setup3dLayers(abstractClientPlayer, settings, thinArms, instance.getModel())) {
                 Mesh part = sleeve == (instance.getModel()).leftSleeve ? settings.getLeftArmMesh() : settings.getRightArmMesh();
+
+                #if MC <= MC_21
                 part.copyFrom(arm);
+                #endif
+
                 poseStack.pushPose();
                 poseStack.scale(SkinLayersModBase.config.firstPersonPixelScaling, armHeightScaling, SkinLayersModBase.config.firstPersonPixelScaling);
                 boolean left = sleeve == (instance.getModel()).leftSleeve;
@@ -71,5 +89,6 @@ public abstract class ETF3DSkinLayersUtil {
                 poseStack.popPose();
             }
         }
+        #endif
     }
 }

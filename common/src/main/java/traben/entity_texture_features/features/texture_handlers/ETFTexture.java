@@ -136,13 +136,13 @@ public class ETFTexture {
 
     public static void patchTextureToRemoveZFightingWithOtherTexture(NativeImage baseImage, NativeImage otherImage) throws IndexOutOfBoundsException {
         //here we alter the first image removing all pixels that are present in the second image to prevent z fighting
-        //this does not support transparency and is a hard counter to f-fighting
+        //this does not support transparency and is a hard counter to z-fighting
         try {
             if (otherImage.getWidth() == baseImage.getWidth() && otherImage.getHeight() == baseImage.getHeight()) {
                 for (int x = 0; x < baseImage.getWidth(); x++) {
                     for (int y = 0; y < baseImage.getHeight(); y++) {
                         if (otherImage.getLuminanceOrAlpha(x, y) != 0) {
-                            baseImage.setPixelRGBA(x, y, 0);
+                            ETFUtils2.setPixel(baseImage, x, y, 0);
                         }
                     }
                 }
@@ -324,7 +324,11 @@ public class ETFTexture {
 
     private Optional<Resource> getResourceOrModifyForTrims(final ResourceManager resourceManager) {
         Optional<Resource> vanillaR1 = resourceManager.getResource(thisIdentifier);
-        if (vanillaR1.isEmpty() && thisIdentifier.getPath().contains("textures/trims/models/armor/")) {
+        if (vanillaR1.isEmpty() &&
+                (thisIdentifier.getPath().contains("textures/trims/models/armor/")//prior to 1.21.2
+                        || thisIdentifier.getPath().contains("textures/trims/entity/")//1.21.2
+                )) {
+
             //create this armor trim as an identifier because fuck Sprites, all my homies hate Sprites
 
             //try get an armor trims base texture just to match what texture pack level it is

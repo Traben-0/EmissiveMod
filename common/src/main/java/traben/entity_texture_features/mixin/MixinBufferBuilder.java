@@ -18,11 +18,11 @@ import net.minecraft.resources.ResourceLocation;
 public class MixinBufferBuilder implements ETFVertexConsumer {
 
     @Unique
-    MultiBufferSource etf$provider = null;
+    private MultiBufferSource etf$provider = null;
     @Unique
-    RenderType etf$renderLayer = null;
+    private RenderType etf$renderLayer = null;
     @Unique
-    ETFTexture etf$ETFTexture = null;
+    private ETFTexture etf$ETFTexture = null;
 
     @Override
     public ETFTexture etf$getETFTexture() {

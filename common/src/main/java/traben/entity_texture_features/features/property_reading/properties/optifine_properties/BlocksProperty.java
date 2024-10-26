@@ -6,6 +6,7 @@ import traben.entity_texture_features.ETFApi;
 import traben.entity_texture_features.features.property_reading.properties.generic_properties.StringArrayOrRegexProperty;
 import traben.entity_texture_features.utils.ETFEntity;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import traben.entity_texture_features.utils.ETFUtils2;
 
 
 public class BlocksProperty extends StringArrayOrRegexProperty {
@@ -73,16 +75,18 @@ public class BlocksProperty extends StringArrayOrRegexProperty {
         }
     }
 
-    protected static String getFromStateBlockNameOnly(BlockState state) {
-        return BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString().replaceFirst("minecraft:", "");
+    protected String getFromStateBlockNameOnly(BlockState state) {
+        String block = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString().replaceFirst("minecraft:", "");
+        if (doPrint)ETFUtils2.logMessage("Blocks property print (no blockstate data): [" + block+"]");
+        return block;
     }
 
-    private static String getFromStateBlockNameWithStateData(BlockState state) {
-
+    private String getFromStateBlockNameWithStateData(BlockState state) {
         String block = getFromStateBlockNameOnly(state);
         if (!state.getValues().isEmpty())
             block = block + ':' + state.getValues().entrySet().stream().map(PROPERTY_MAP_PRINTER).collect(Collectors.joining(":"));
 
+        if (doPrint)ETFUtils2.logMessage("Blocks property print (with blockstate data): [" + block+"]");
         return block;
     }
 
@@ -116,34 +120,46 @@ public class BlocksProperty extends StringArrayOrRegexProperty {
         return true;
     }
 
-    @Override
-    public boolean testEntityInternal(ETFEntity entity) {
-
-
-        BlockState[] entityBlocks;
-
+    @Nullable
+    protected BlockState[] getTestingBlocks(ETFEntity entity){
         if (entity.etf$getUuid().getLeastSignificantBits() == ETFApi.ETF_SPAWNER_MARKER) {
             // entity is a mini mob spawner entity
             // return a blank mob spawner block state
-            entityBlocks = new BlockState[]{Blocks.SPAWNER.defaultBlockState()};
+            return new BlockState[]{Blocks.SPAWNER.defaultBlockState()};
         } else if (entity instanceof BlockEntity blockEntity) {
             if (blockEntity.getLevel() == null) {
-                entityBlocks = new BlockState[]{blockEntity.getBlockState()};
+                return new BlockState[]{blockEntity.getBlockState()};
             } else {
-                entityBlocks = new BlockState[]{blockEntity.getBlockState(), blockEntity.getLevel().getBlockState(blockEntity.getBlockPos().below())};
+                return new BlockState[]{blockEntity.getBlockState(), blockEntity.getLevel().getBlockState(blockEntity.getBlockPos().below())};
             }
         } else {
-            if (entity.etf$getWorld() == null || entity.etf$getBlockPos() == null) return false;
+            if (entity.etf$getWorld() == null || entity.etf$getBlockPos() == null){
+                return null;
+            }
             Level world = entity.etf$getWorld();
             BlockPos pos = entity.etf$getBlockPos();
-            entityBlocks = new BlockState[]{world.getBlockState(pos), world.getBlockState(pos.below())};
+            return new BlockState[]{world.getBlockState(pos), world.getBlockState(pos.below())};
         }
-        // if(entityBlocks.length == 0) return false;
+    }
+
+    @Override
+    public boolean testEntityInternal(ETFEntity entity) {
+        BlockState[] entityBlocks = getTestingBlocks(entity);
+        if (entityBlocks == null){
+            if (doPrint) ETFUtils2.logMessage("Blocks property print result: [false], because null");
+            return false;
+        }
+
+        if (doPrint) ETFUtils2.logMessage("Blocks property print, found blocks: [" + Arrays.toString(entityBlocks) + "]");
 
         for (BlockState entityBlock : entityBlocks) {
             //check each block before returning false
-            if (blockStateMatcher.apply(entityBlock)) return true;
+            if (blockStateMatcher.apply(entityBlock)){
+                if (doPrint) ETFUtils2.logMessage("Blocks property print result: [true]");
+                return true;
+            }
         }
+        if (doPrint) ETFUtils2.logMessage("Blocks property print result: [false]");
         return false;
     }
 

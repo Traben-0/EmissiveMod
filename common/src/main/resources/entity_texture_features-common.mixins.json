@@ -35,7 +35,7 @@
     "entity.renderer.feature.MixinEyeFeatureRenderer",
     "entity.renderer.feature.MixinMooshroomMushroomFeatureRenderer",
     "entity.renderer.feature.MixinShoulderParrotFeatureRenderer",
-    "entity.renderer.feature.MixinWardenFeatureRenderer",
+    "entity.renderer.feature.MixinWardenExtraTextureParts",
     "mods.iris.old.MixinFullyBufferedMultiBufferSource",
     "mods.iris.old.MixinInnerWrappedRenderType",
     "mods.iris.old.MixinOuterWrappedRenderType",

@@ -1,5 +1,23 @@
 [**ETF Changelog:**]
 
+[6.2.6]
+- update to minecraft 1.21.2+
+- added the `minecraftVersion` property to vary textures based on the current minecraft version, supports ranges e.g. `1.17-1.18.2`
+- due to armor texture location changes emissive trims can now be found at 
+  - `textures/trims/entity/humanoid/<trim_type>_<material>_e.png`
+  - `textures/trims/entity/humanoid_leggings/<trim_type>_<material>_e.png`
+  - e.g. `textures/trims/entity/humanoid_leggings/rib_redstone_e.png`
+  - this may yet be reverted if OptiFine opts to keep the old directory
+
+[6.2.5]
+- fixed a logical error that would make spawn locked properties occasionally override the fact that non spawn locked properties were still present and still needed future updates.
+- fixed block entities not updating when using non spawn locked properties.
+- made the properties settings screen list display in alphabetical order.
+- removed log spam if ETF accidentally read a cit .properties file, due to a texture pointing there.
+- ensured all ETF logs pre append `[ETF]: ` for easier log filtering.
+- added the `blockBelow` && `blockBelowSolid` properties to vary textures based on the first non-air block below the entity, no matter the distance, the latter only triggers for the first solid block found.
+- added the `blockAbove` && `blockAboveSolid` properties to vary textures based on the first non-air block above the entity, no matter the distance, the latter only triggers for the first solid block found.
+
 [6.2.4]
 - fixed the `nbt` property breaking since version 6.2 when declaring more than one `nbt` property in a single rule
 - added the `nbtVehicle` property to vary textures by the entity nbt data of the entity being ridden by the current entity, passenger nbt can be found within the regular `nbt` property under the passenger nbt data

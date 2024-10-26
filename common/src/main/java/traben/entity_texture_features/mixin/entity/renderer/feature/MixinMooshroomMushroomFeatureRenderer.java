@@ -125,7 +125,7 @@ public abstract class MixinMooshroomMushroomFeatureRenderer {
                 try (NativeImage flippedOriginalImage = ETFUtils2.emptyNativeImage(originalImagePreFlip.getWidth(), originalImagePreFlip.getHeight())) {
                     for (int x = 0; x < flippedOriginalImage.getWidth(); x++) {
                         for (int y = 0; y < flippedOriginalImage.getHeight(); y++) {
-                            flippedOriginalImage.setPixelRGBA(x, y, originalImagePreFlip.getPixelRGBA(x, originalImagePreFlip.getHeight() - 1 - y));
+                            ETFUtils2.setPixel(flippedOriginalImage, x, y, ETFUtils2.getPixel(originalImagePreFlip, x, originalImagePreFlip.getHeight() - 1 - y));
                         }
                     }
                     //mirror 2x wide texture for entity rendering
@@ -133,9 +133,9 @@ public abstract class MixinMooshroomMushroomFeatureRenderer {
                     for (int x = 0; x < newImage.getWidth(); x++) {
                         for (int y = 0; y < newImage.getHeight(); y++) {
                             if (x < flippedOriginalImage.getWidth()) {
-                                newImage.setPixelRGBA(x, y, flippedOriginalImage.getPixelRGBA(x, y));
+                                ETFUtils2.setPixel(newImage,x, y, ETFUtils2.getPixel(flippedOriginalImage,x, y));
                             } else {
-                                newImage.setPixelRGBA(x, y, flippedOriginalImage.getPixelRGBA(flippedOriginalImage.getWidth() - 1 - (x - flippedOriginalImage.getWidth()), y));
+                                ETFUtils2.setPixel(newImage,x, y, ETFUtils2.getPixel(flippedOriginalImage,flippedOriginalImage.getWidth() - 1 - (x - flippedOriginalImage.getWidth()), y));
                             }
                         }
                     }
