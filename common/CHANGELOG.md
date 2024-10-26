@@ -1,7 +1,13 @@
 [**ETF Changelog:**]
 
-
-minecraftVersion property
+[6.2.6]
+- update to minecraft 1.21.2+
+- added the `minecraftVersion` property to vary textures based on the current minecraft version, supports ranges e.g. `1.17-1.18.2`
+- due to armor texture location changes emissive trims can now be found at 
+  - `textures/trims/entity/humanoid/<trim_type>_<material>_e.png`
+  - `textures/trims/entity/humanoid_leggings/<trim_type>_<material>_e.png`
+  - e.g. `textures/trims/entity/humanoid_leggings/rib_redstone_e.png`
+  - this may yet be reverted if OptiFine opts to keep the old directory
 
 [6.2.5]
 - fixed a logical error that would make spawn locked properties occasionally override the fact that non spawn locked properties were still present and still needed future updates.

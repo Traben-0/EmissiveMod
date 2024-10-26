@@ -63,6 +63,8 @@ public class RandomProperties {
                 RandomPropertyFactory.of("textureRule", "config.entity_texture_features.property_explanation.texture_rule", TextureRuleIndexProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("modLoaded", "config.entity_texture_features.property_explanation.mod_rule", ModLoadedProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("nbtClient", "config.entity_texture_features.property_explanation.nbt_client", NBTClientProperty::getPropertyOrNull),
+                RandomPropertyFactory.of("minecraftVersion", "config.entity_texture_features.property_explanation.mc_version", MinecraftVersionProperty::getPropertyOrNull),
+
 
                 //OptiFine properties
                 RandomPropertyFactory.of("baby", "config.entity_texture_features.property_explanation.baby", BabyProperty::getPropertyOrNull),
