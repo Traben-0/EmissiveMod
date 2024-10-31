@@ -83,12 +83,10 @@ This way, ETF achieves more OptiFine parity on the Fabric mod loader. If you wan
 <img src="README-assets/skins3.png" alt="Skin3" width="450"><br/>
 <img src="README-assets/jacket.png" alt="Jacket" width="450"><br/>
 <img src="README-assets/villager-nose.png" alt="Vllager Nose" width="275">
-<img src="README-assets/custom-cape.png" alt="Custom Cape" width="180">
-<img src="README-assets/cape-example.png" alt="Cape" width="228">
 
 <div align="left">
 
-- Player skins can use emissive, blinking, enchanted, transparency texture features, as well as other cosmetics like capes, jackets, dress extensions and more
+- Player skins can use emissive, blinking, enchanted, transparency texture features, as well as other cosmetics like jackets, dress extensions and more
 - They are 100% optional, controlled by the skin file you upload to Mojang and options to prevent abuse of features in PvP
 
 </div>
