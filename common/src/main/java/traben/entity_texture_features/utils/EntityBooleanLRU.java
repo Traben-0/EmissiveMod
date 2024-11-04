@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2BooleanLinkedOpenHashMap;
 import java.util.UUID;
 
 public class EntityBooleanLRU extends Object2BooleanLinkedOpenHashMap<UUID> {
-    final int capacity;
+    private final int capacity;
 
     {
         defaultReturnValue(false);

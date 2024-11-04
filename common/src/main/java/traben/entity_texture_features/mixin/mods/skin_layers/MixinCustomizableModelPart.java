@@ -26,20 +26,41 @@ import traben.entity_texture_features.utils.ETFVertexConsumer;
 @Mixin(value = CustomizableModelPart.class)// implements Mesh
 public abstract class MixinCustomizableModelPart {
 
+    #if MC > MC_20_4
+    @Shadow
+    public abstract void render(final ModelPart vanillaModel, final PoseStack poseStack, final VertexConsumer vertexConsumer, final int light, final int overlay, final int color);
+    #else
     @Shadow
     public abstract void render(ModelPart vanillaModel, PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha);
+    #endif
 
-    @Inject(method = "render(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V",
+    @Inject(method =
+            #if MC > MC_20_4
+            "render(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V",
+            #else
+            "render(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V",
+            #endif
             at = @At(value = "HEAD"))
-    private void etf$findOutIfInitialModelPart(ModelPart vanillaModel, PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha, CallbackInfo ci) {
+    private void etf$findOutIfInitialModelPart(CallbackInfo ci) {
         if (ETF.config().getConfig().use3DSkinLayerPatch) {
             ETFRenderContext.incrementCurrentModelPartDepth();
         }
     }
 
-    @Inject(method = "render(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V",
+    @Inject(method =
+            #if MC > MC_20_4
+            "render(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V",
+            #else
+            "render(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V",
+            #endif
             at = @At(value = "RETURN"))
-    private void etf$doEmissive(ModelPart vanillaModel, PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha, CallbackInfo ci) {
+    private void etf$doEmissive(
+            #if MC > MC_20_4
+            final ModelPart vanillaModel, final PoseStack poseStack, final VertexConsumer vertexConsumer, final int light, final int overlay, final int color, final CallbackInfo ci
+            #else
+            ModelPart vanillaModel, PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha, CallbackInfo ci
+            #endif
+            ) {
         if (ETF.config().getConfig().use3DSkinLayerPatch) {
             //run code if this is the initial topmost rendered part
             if (ETFRenderContext.getCurrentModelPartDepth() != 1) {
@@ -53,7 +74,10 @@ public abstract class MixinCustomizableModelPart {
                         RenderType layer = etfVertexConsumer.etf$getRenderLayer();
                         if (provider != null && layer != null) {
                             //attempt special renders as eager OR checks
-                            ETFUtils2.RenderMethodForOverlay renderer = (a, b) -> render(vanillaModel, poseStack, a, b, overlay, red, green, blue, alpha);
+                            ETFUtils2.RenderMethodForOverlay renderer =
+                                    (a, b) -> render(vanillaModel, poseStack, a, b, overlay,
+                                            #if MC > MC_20_4 color #else red, green, blue, alpha #endif);
+
                             if (ETFUtils2.renderEmissive(texture, provider, renderer) |
                                     ETFUtils2.renderEnchanted(texture, provider, light, renderer)) {
                                 //reset render layer stuff behind the scenes if special renders occurred

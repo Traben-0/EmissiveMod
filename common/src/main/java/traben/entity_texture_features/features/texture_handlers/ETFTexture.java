@@ -76,8 +76,29 @@ public class ETFTexture {
         setupEnchants();
     }
 
+    public static ETFTexture manual(@NotNull ResourceLocation modifiedSkinIdentifier,
+                                    @Nullable ResourceLocation blinkIdentifier,
+                                    @Nullable ResourceLocation blink2Identifier,
+                                    @Nullable ResourceLocation emissiveIdentifier,
+                                    @Nullable ResourceLocation blinkEmissiveIdentifier,
+                                    @Nullable ResourceLocation blink2EmissiveIdentifier,
+                                    @Nullable ResourceLocation enchantIdentifier,
+                                    @Nullable ResourceLocation blinkenchantIdentifier,
+                                    @Nullable ResourceLocation blink2enchantIdentifier,
+                                    @Nullable ResourceLocation patchIdentifier,
+                                    @Nullable ResourceLocation blinkpatchIdentifier,
+                                    @Nullable ResourceLocation blink2patchIdentifier){
+        return new ETFTexture(modifiedSkinIdentifier, blinkIdentifier, blink2Identifier, emissiveIdentifier, blinkEmissiveIdentifier, blink2EmissiveIdentifier, enchantIdentifier, blinkenchantIdentifier, blink2enchantIdentifier, patchIdentifier, blinkpatchIdentifier, blink2patchIdentifier);
+    }
+
+    public static ETFTexture manual(@NotNull ResourceLocation modifiedSkinIdentifier,
+                                    @Nullable ResourceLocation emissiveIdentifier,
+                                    @Nullable ResourceLocation enchantIdentifier){
+        return new ETFTexture(modifiedSkinIdentifier, null, null, emissiveIdentifier, null, null, enchantIdentifier, null, null, null, null, null);
+    }
+
     //alternative initiator for already known textures used for players
-    public ETFTexture(@NotNull ResourceLocation modifiedSkinIdentifier,
+    private ETFTexture(@NotNull ResourceLocation modifiedSkinIdentifier,
                       @Nullable ResourceLocation blinkIdentifier,
                       @Nullable ResourceLocation blink2Identifier,
                       @Nullable ResourceLocation emissiveIdentifier,
@@ -543,7 +564,7 @@ public class ETFTexture {
             case BLINK2, BLINK2_PATCHED -> emissiveBlink2Identifier;
             default ->
                 //ETFUtils.logError("identifierOfCurrentState failed, it should not have, returning default");
-                    null;
+                    emissiveIdentifier;
         };
     }
 
@@ -555,7 +576,7 @@ public class ETFTexture {
             case BLINK2, BLINK2_PATCHED -> enchantBlink2Identifier;
             default ->
                 //ETFUtils.logError("identifierOfCurrentState failed, it should not have, returning default");
-                    null;
+                    enchantIdentifier;
         };
     }
 

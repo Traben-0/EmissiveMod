@@ -24,27 +24,27 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import traben.entity_texture_features.ETF;
-import traben.entity_texture_features.compat.ETF3DSkinLayersUtil;
 import traben.entity_texture_features.features.ETFManager;
 import traben.entity_texture_features.features.ETFRenderContext;
 import traben.entity_texture_features.features.player.ETFPlayerFeatureRenderer;
 import traben.entity_texture_features.features.player.ETFPlayerSkinHolder;
 import traben.entity_texture_features.features.player.ETFPlayerTexture;
-import traben.entity_texture_features.utils.ETFUtils2;
 
 
 #if MC > MC_21
 import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 @Mixin(PlayerRenderer.class)
 public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayer, PlayerRenderState, PlayerModel> implements ETFPlayerSkinHolder {
-#else
+    @Shadow
+    protected abstract void renderNameTag(final PlayerRenderState playerRenderState, final Component component, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i);
+
+
+    #else
 @Mixin(PlayerRenderer.class)
 public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> implements ETFPlayerSkinHolder {
 #endif
 
 
-    @Shadow
-    protected abstract void renderNameTag(final PlayerRenderState playerRenderState, final Component component, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i);
 
     @Unique
     private ETFPlayerTexture etf$ETFPlayerTexture = null;
@@ -132,24 +132,6 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
         arm.render(matrixStack, consumer, light, OverlayTexture.NO_OVERLAY);
         sleeve.render(matrixStack, consumer, light, OverlayTexture.NO_OVERLAY);
         #endif
-
-        if (ETF.SKIN_LAYERS_DETECTED && ETF.config().getConfig().use3DSkinLayerPatch) {
-            try {
-                // handler class is only ever accessed if the mod is present
-                // prevents NoClassDefFoundError
-                //noinspection DataFlowIssue
-                ETF3DSkinLayersUtil.renderHand((PlayerRenderer) ((Object) this), matrixStack, consumer, light, player, #if MC > MC_21 armAndSleeve #else arm, sleeve #endif);
-            } catch (Exception e) {
-                //ETFUtils2.logWarn("Exception with ETF's 3D skin layers mod compatibility: " + e);
-            } catch (NoClassDefFoundError error) {
-                // Should never be thrown
-                // unless a significant change if skin layers mod
-                ETFUtils2.logError("Error with ETF's 3D skin layers mod hand compatibility: " + error);
-                error.printStackTrace();
-                //prevent further attempts
-                ETF.SKIN_LAYERS_DETECTED = false;
-            }
-        }
     }
 
     #if MC > MC_21

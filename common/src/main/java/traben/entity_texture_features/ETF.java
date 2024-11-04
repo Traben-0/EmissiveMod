@@ -33,7 +33,9 @@ public class ETF {
     public static final int EMISSIVE_FEATURE_LIGHT_VALUE = LightTexture.FULL_BRIGHT + 2;
     public static TConfigHandler<ETFConfigScreenWarnings.WarningConfig> warningConfigHandler = null;
     public static boolean IRIS_DETECTED = false;
+
     public static boolean SKIN_LAYERS_DETECTED = false;
+
     public static Set<TConfigHandler<?>> configHandlers = null;
     private static TConfigHandler<ETFConfig> CONFIG = null;
 

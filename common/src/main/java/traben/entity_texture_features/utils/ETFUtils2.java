@@ -1,6 +1,7 @@
 package traben.entity_texture_features.utils;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.ETF;
@@ -54,7 +55,7 @@ public abstract class ETFUtils2 {
 
     public static void setPixel(NativeImage image, int x, int y, int color) {
         #if MC > MC_21
-        image.setPixel(x, y, color);
+        image.setPixel(x, y, ARGB.toABGR(color));
         #else
         image.setPixelRGBA(x, y, color);
         #endif
@@ -62,7 +63,8 @@ public abstract class ETFUtils2 {
 
     public static int getPixel(NativeImage image, int x, int y) {
         #if MC > MC_21
-        return image.getPixel(x, y);
+
+        return ARGB.fromABGR( image.getPixel(x, y));
         #else
         return image.getPixelRGBA(x, y);
         #endif

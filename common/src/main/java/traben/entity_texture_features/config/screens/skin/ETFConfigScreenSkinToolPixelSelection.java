@@ -195,7 +195,7 @@ public class ETFConfigScreenSkinToolPixelSelection extends ETFScreenOldCompat {
         entity.yHeadRotO = entity.getYRot();
 
         #if MC > MC_21
-        context.drawSpecial((bufferSource) -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.pose(), bufferSource, 15728880));
+        context.drawSpecial((bufferSource) -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.pose(), bufferSource, LightTexture.pack(7, 7)));
         #else
         //noinspection deprecation
         RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.pose(), context.bufferSource(), LightTexture.pack(7, 7)));

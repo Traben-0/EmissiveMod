@@ -99,7 +99,7 @@ public class ETFPlayerTexture {
                 checkTexture(true);
             } catch (Exception e) {
                 //e.printStackTrace();
-                skinFailed();
+                skinFailed("player head block failure");
             }
         }
     }
@@ -635,13 +635,13 @@ public class ETFPlayerTexture {
                         || player.etf$getScoreboardTeam() == null));
     }
 
-    private void skinFailed() {
+    private void skinFailed(String reason) {
         if (!(Minecraft.getInstance().screen instanceof ETFConfigScreenSkinTool)) {
             ETFManager.getInstance().PLAYER_TEXTURE_MAP.put(player.etf$getUuid(), new ETFPlayerTexture(normalVanillaSkinIdentifier));
         } else {
-            ETFUtils2.logError("something went wrong applying skin in tool, or skin features are not added");
+            ETFUtils2.logError("something went wrong applying skin in tool, or skin features are not added: "+ reason);
         }
-        //this object is now unreachable
+
     }
 
     public void checkTexture(boolean skipSkinLoad) {
@@ -683,7 +683,7 @@ public class ETFPlayerTexture {
 //                    // System.out.println("cape failed no textures loaded");
 //                }
             } catch (Exception e) {
-                skinFailed();
+                skinFailed("skin load failure: "+ e.getMessage());
                 // System.out.println("skin failed no textures loaded");
                 return;
             }
@@ -1135,15 +1135,21 @@ public class ETFPlayerTexture {
                         ETFTexture.patchTextureToRemoveZFightingWithOtherTexture(modifiedSkin, emissiveImage);
 
                         ETFUtils2.registerNativeImageToIdentifier(modifiedSkin, modifiedSkinPatchedIdentifier);
+                        ETFManager.getInstance().ETF_TEXTURE_CACHE.put(modifiedSkinPatchedIdentifier,
+                                ETFTexture.manual(modifiedSkinPatchedIdentifier, emissiveIdentifier, baseEnchantIdentifier));
                         if (blinkSkinFile != null) {
                             modifiedSkinBlinkPatchedIdentifier = ETFUtils2.res(SKIN_NAMESPACE, id + "_blink_e_patched.png");
                             ETFTexture.patchTextureToRemoveZFightingWithOtherTexture(blinkSkinFile, emissiveBlinkImage);
                             ETFUtils2.registerNativeImageToIdentifier(blinkSkinFile, modifiedSkinBlinkPatchedIdentifier);
+                            ETFManager.getInstance().ETF_TEXTURE_CACHE.put(modifiedSkinBlinkPatchedIdentifier,
+                                    ETFTexture.manual(modifiedSkinBlinkPatchedIdentifier, blinkEmissiveIdentifier, baseEnchantBlinkIdentifier));
                         }
                         if (blinkSkinFile2 != null) {
                             modifiedSkinBlink2PatchedIdentifier = ETFUtils2.res(SKIN_NAMESPACE, id + "_blink2_e_patched.png");
                             ETFTexture.patchTextureToRemoveZFightingWithOtherTexture(blinkSkinFile2, emissiveBlink2Image);
                             ETFUtils2.registerNativeImageToIdentifier(blinkSkinFile2, modifiedSkinBlink2PatchedIdentifier);
+                            ETFManager.getInstance().ETF_TEXTURE_CACHE.put(modifiedSkinBlink2PatchedIdentifier,
+                                    ETFTexture.manual(modifiedSkinBlink2PatchedIdentifier, blink2EmissiveIdentifier, baseEnchantBlink2Identifier));
                         }
                     }
 //                    if (emissiveCape != null) {
@@ -1158,7 +1164,7 @@ public class ETFPlayerTexture {
                 ETFUtils2.registerNativeImageToIdentifier(modifiedSkin, modifiedSkinIdentifier);
 
                 //create etf texture with player initiator
-                etfTextureOfFinalBaseSkin = new ETFTexture(modifiedSkinIdentifier,
+                etfTextureOfFinalBaseSkin = ETFTexture.manual(modifiedSkinIdentifier,
                         blinkIdentifier,
                         blink2Identifier,
                         emissiveIdentifier,
@@ -1204,7 +1210,7 @@ public class ETFPlayerTexture {
 //                    etfTextureOfFinalBaseSkin = new ETFTexture(skinIdentifier, null, null, null, null, null, null, null, null, null, null, null);
 //
 //                } else {
-                skinFailed();
+                skinFailed("no marker");
 //                }
 
                 // System.out.println("asdasd");
@@ -1212,7 +1218,7 @@ public class ETFPlayerTexture {
             }
         } else {
             //System.out.println("asdasdffsdfsdsd");
-            skinFailed();
+            skinFailed("null skin");
         }
         isTextureReady = true;
     }
