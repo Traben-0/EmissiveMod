@@ -95,7 +95,7 @@ public abstract class TConfigScreenMain extends TConfigScreen {
         if (!modIcons.isEmpty()) {
             int ix = this.width - (modIcons.size() * 34);
             for (ResourceLocation modIcon : modIcons) {
-                context.blit(#if MC >= MC_20_6 RenderType::guiTextured, #endif modIcon, ix, 2, 0, 0, 32, 32, 32, 32);
+                context.blit(#if MC > MC_21 RenderType::guiTextured, #endif modIcon, ix, 2, 0, 0, 32, 32, 32, 32);
                 ix += 34;
             }
         }

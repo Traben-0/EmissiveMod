@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +18,7 @@ public class MixinEntityRenderDispatcher {
             #if MC > MC_21
             "render(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/EntityRenderer;)V",
             at = @At(value = "HEAD"))
-    private <E extends Entity, S extends EntityRenderState> void etf$grabContext(final E entity, final double d, final double e, final double f, final float g, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i, final EntityRenderer<? super E, S> entityRenderer, final CallbackInfo ci) {
+    private <E extends Entity, S extends net.minecraft.client.renderer.entity.state.EntityRenderState> void etf$grabContext(final E entity, final double d, final double e, final double f, final float g, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i, final EntityRenderer<? super E, S> entityRenderer, final CallbackInfo ci) {
             #else
             "render",
             at = @At(value = "HEAD"))

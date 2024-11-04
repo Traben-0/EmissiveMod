@@ -6,11 +6,12 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.state.WardenRenderState;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 
 #if MC > MC_21
+import net.minecraft.client.renderer.entity.state.WardenRenderState;
 import net.minecraft.client.model.EntityModel;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -58,6 +59,14 @@ public abstract class MixinWardenExtraTextureParts extends EntityModel<WardenRen
 import net.minecraft.client.model.WardenModel;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.client.renderer.entity.layers.WardenEmissiveLayer;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import traben.entity_texture_features.ETF;
+import traben.entity_texture_features.utils.ETFUtils2;
+
 @Mixin(WardenEmissiveLayer.class)
 public abstract class MixinWardenExtraTextureParts<T extends Warden, M extends WardenModel<T>> extends RenderLayer<T, M> {
     @SuppressWarnings("unused")

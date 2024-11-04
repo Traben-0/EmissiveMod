@@ -48,6 +48,8 @@ public class RandomProperties {
                 RandomPropertyFactory.of("blockAboveSolid", "config.entity_texture_features.property_explanation.block_above_solid", BlockAboveSolidProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("blockBelow", "config.entity_texture_features.property_explanation.block_below", BlockBelowProperty::getPropertyOrNull),
                 RandomPropertyFactory.of("blockBelowSolid", "config.entity_texture_features.property_explanation.block_below_solid", BlockBelowSolidProperty::getPropertyOrNull),
+                RandomPropertyFactory.of("biomeTag", "config.entity_texture_features.property_explanation.biome_tag", BiomeTagProperty::getPropertyOrNull, true),
+                RandomPropertyFactory.of("temperature", "config.entity_texture_features.property_explanation.temperature", TemperatureProperty::getPropertyOrNull,true),
 
                 //etf externals
                 RandomPropertyFactory.of("hour", "config.entity_texture_features.property_explanation.hour", HourProperty::getPropertyOrNull),

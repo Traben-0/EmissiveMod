@@ -1,5 +1,14 @@
 [**ETF Changelog:**]
 
+[6.2.7]
+- fixed log spam in 1.21.3 due to errors with the shoulder parrot feature renderer
+- updated for forge 1.21.3
+- fixed compatibility with the new `3d skin layers` mod update v1.7
+- fixed visual issues in the player skin tool in 1.21.3
+- added the `biomeTag` property to vary textures based on the biome tags of the entities spawn biome, does not support regex, only exact string matches, `minecraft:` is optional for vanilla tags. Prefix with `print:` to log the found biome tags
+- added the `temperature` property to vary textures based on the entities spawn position temperature, supports ranges e.g. `0-0.15` is an approximate range for snowfall. Prefix with `print:` to log the found temperature
+
+
 [6.2.6]
 - update to minecraft 1.21.2+
 - added the `minecraftVersion` property to vary textures based on the current minecraft version, supports ranges e.g. `1.17-1.18.2`

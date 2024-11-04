@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
-import net.minecraft.util.ColorRGBA;
+
+
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 import traben.entity_texture_features.ETF;
@@ -46,11 +46,11 @@ public abstract class ETFScreenOldCompat extends TConfigScreen {
         tessellator.end();
         #elif MC > MC_21
         context.blit(RenderType::guiTextured, texture, (int) x1, (int) y1, 0, 0, (int) (x2-x1), (int) (y2-y1), 1, 1, 1, 1,
-                ARGB.color( 255, 255, 255, 255));
+                net.minecraft.util.ARGB.color( 255, 255, 255, 255));
         #else //mc_21
 
         RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(  GameRenderer::   GameRenderer::getPositionTexColorShader );
+        RenderSystem.setShader(  GameRenderer::getPositionTexColorShader );
         RenderSystem.enableBlend();
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);

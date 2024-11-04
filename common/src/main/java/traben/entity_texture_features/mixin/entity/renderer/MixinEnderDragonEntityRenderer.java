@@ -4,7 +4,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EnderDragonRenderState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import org.spongepowered.asm.mixin.Final;
@@ -21,7 +20,7 @@ import traben.entity_texture_features.utils.ETFUtils2;
 
 
 @Mixin(EnderDragonRenderer.class)
-public abstract class MixinEnderDragonEntityRenderer extends #if MC > MC_21 EntityRenderer<EnderDragon, EnderDragonRenderState> #else EntityRenderer<EnderDragon> #endif {
+public abstract class MixinEnderDragonEntityRenderer extends #if MC > MC_21 EntityRenderer<EnderDragon, net.minecraft.client.renderer.entity.state.EnderDragonRenderState> #else EntityRenderer<EnderDragon> #endif {
 
     @Final
     @Shadow

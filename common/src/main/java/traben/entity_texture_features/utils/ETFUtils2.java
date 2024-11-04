@@ -1,7 +1,6 @@
 package traben.entity_texture_features.utils;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.ETF;
@@ -26,6 +25,11 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.MutableComponent;
+
+#if MC > MC_21
+import net.minecraft.util.ARGB;
+#endif
+
 #if MC > MC_20_2
 import net.minecraft.network.chat.contents.PlainTextContents;
 #else

@@ -44,3 +44,5 @@ accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRende
 accessible field net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey trim Lnet/minecraft/world/item/equipment/trim/ArmorTrim;
 accessible field net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey layerType Lnet/minecraft/world/item/equipment/EquipmentModel$LayerType;
 accessible field net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey equipmentModelId Lnet/minecraft/resources/ResourceLocation;
+
+accessible method net/minecraft/world/level/biome/Biome getHeightAdjustedTemperature (Lnet/minecraft/core/BlockPos;I)F

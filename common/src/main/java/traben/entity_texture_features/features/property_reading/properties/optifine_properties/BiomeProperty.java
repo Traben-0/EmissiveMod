@@ -16,7 +16,6 @@ public class BiomeProperty extends StringArrayOrRegexProperty {
 
     protected BiomeProperty(String data) throws RandomProperty.RandomPropertyException {
         super(data);
-        System.out.println("biomecreate: " + data);
     }
 
     public static BiomeProperty getPropertyOrNull(Properties properties, int propertyNum) {
