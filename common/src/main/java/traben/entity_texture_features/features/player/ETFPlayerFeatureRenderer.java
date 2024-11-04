@@ -43,16 +43,11 @@ public class ETFPlayerFeatureRenderer<T extends Player, M extends PlayerModel<T>
     static private final ResourceLocation VILLAGER_TEXTURE = ETFUtils2.res("textures/entity/villager/villager.png");
     protected final ETFPlayerSkinHolder skinHolder;
 
+
     //public boolean sneaking;
     public ETFPlayerFeatureRenderer(RenderLayerParent<T, M> context) {
         super(context);
         this.skinHolder = context instanceof ETFPlayerSkinHolder holder ? holder : null;
-
-//        ModelPartData data = getModelData(new Dilation(0)).getRoot();
-//        this.jacket = data.getChild("jacket").createPart(64, 64);
-//        this.fatJacket = data.getChild("fatJacket").createPart(64, 64);
-//        this.villagerNose = data.getChild("nose").createPart(64, 64); //23   15
-//        this.textureNose = data.getChild("textureNose").createPart(8, 8); //23   15
     }
 
     public static MeshDefinition getModelData(CubeDeformation dilation) {

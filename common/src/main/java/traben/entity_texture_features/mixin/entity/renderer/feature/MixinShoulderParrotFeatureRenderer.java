@@ -63,10 +63,13 @@ public abstract class MixinShoulderParrotFeatureRenderer<T extends Player> exten
     @Unique
     private static void etf$setParrotAsCurrentEntity(final Player playerEntity, final CompoundTag nbtCompound) {
         if (nbtCompound != null) {
-            Optional<Entity> optionalEntity = EntityType.create(nbtCompound, playerEntity.level(), EntitySpawnReason.COMMAND);
-            if (optionalEntity.isPresent() && optionalEntity.get() instanceof Parrot parrot) {
-                ETFRenderContext.setCurrentEntity((ETFEntity) parrot);
-            }
+            try {
+                var optionalEntity = EntityType.PARROT.create(playerEntity.level(), EntitySpawnReason.COMMAND);
+                if (optionalEntity instanceof Parrot parrot) {//null check
+                    optionalEntity.load(nbtCompound);
+                    ETFRenderContext.setCurrentEntity((ETFEntity) parrot);
+                }
+            } catch (final Exception ignored) {}
         }
     }
 
