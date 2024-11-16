@@ -181,7 +181,7 @@ public class ETFTexture {
         if (idString.endsWith("-anim")) return true;
         //check if animatica has registered its animated version of this texture
         //noinspection ConstantValue
-        return Minecraft.getInstance().getTextureManager().getTexture(ETFUtils2.res(idString + "-anim"), null) != null;
+        return Minecraft.getInstance().getTextureManager().getTexture(ETFUtils2.res(idString + "-anim") #if MC < MC_21_4 , null #endif) != null;
     }
 
 

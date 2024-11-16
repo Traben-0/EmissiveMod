@@ -77,6 +77,7 @@ public abstract class MixinPlayerEntity extends Entity implements ETFPlayerEntit
     public String etf$getUuidAsString() {
         return getStringUUID();
     }
+
 }
 
 

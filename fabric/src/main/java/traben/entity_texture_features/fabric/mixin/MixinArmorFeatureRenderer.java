@@ -35,12 +35,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+#if MC < MC_21_4
 import net.minecraft.world.item.equipment.EquipmentModel;
+#else
+import net.minecraft.client.resources.model.EquipmentClientInfo;
+
+#endif
 #endif
 
 
+import net.minecraft.world.item.equipment.EquipmentAsset;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -63,7 +70,9 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extend
     private static final ETFArmorHandler etf$armorHandler = new ETFArmorHandler();
 
     @Inject(method =
-            #if MC > MC_21
+            #if MC > MC_21_2
+            "renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            #elif MC > MC_21
             "renderLayers(Lnet/minecraft/world/item/equipment/EquipmentModel$LayerType;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
             #else
             "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
@@ -76,8 +85,36 @@ public abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extend
         }
     }
 
+#if MC > MC_21_2
 
-    #if MC >= MC_21_2
+    @Inject(method = "renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "HEAD"))
+    private void etf$markNotToChange(CallbackInfo ci) {
+        etf$armorHandler.start();
+    }
+
+    @Inject(method = "renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "RETURN"))
+    private void etf$markAllowedToChange(CallbackInfo ci) {
+        etf$armorHandler.end();
+    }
+
+    @ModifyArg(method = "renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "INVOKE", target = "Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;"))
+    private Object etf$setTrim(final Object t) {
+        if (t instanceof EquipmentLayerRenderer.TrimSpriteKey trimSpriteKey){
+            etf$armorHandler.setTrim(trimSpriteKey.textureId());
+        }
+        return t;
+    }
+
+    @Inject(method = "renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/Model;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V",
+                    shift = At.Shift.AFTER))
+    private void etf$renderEmissiveTrim(final EquipmentClientInfo.LayerType layerType, final ResourceKey<EquipmentAsset> resourceKey, final Model model, final ItemStack itemStack, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i, final ResourceLocation resourceLocation, final CallbackInfo ci) {
+        etf$armorHandler.renderTrimEmissive(poseStack, multiBufferSource, model);
+    }
+#elif MC > MC_21
 
     @Inject(method = "renderLayers(Lnet/minecraft/world/item/equipment/EquipmentModel$LayerType;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
             at = @At(value = "HEAD"))

@@ -17,6 +17,7 @@ private void setupPreProcess(def index){
     MC_20_6 = 6
     MC_21   = 7
     MC_21_2 = 8
+    MC_21_4 = 9
     MC      = ${index}
     """
 
@@ -73,7 +74,7 @@ subprojects {
         //more compatible version
 //        annotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.17'
         //latest version
-        annotationProcessor 'systems.manifold:manifold-preprocessor:2024.1.35'
+        annotationProcessor 'systems.manifold:manifold-preprocessor:2024.1.37'
     }
     processResources {
         inputs.property "version", rootProject.mod_version

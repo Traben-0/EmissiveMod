@@ -1,6 +1,9 @@
 package traben.entity_texture_features.mixin.entity.misc;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,16 +16,33 @@ import traben.entity_texture_features.utils.ETFEntity;
 
 @Mixin(BlockEntityRenderDispatcher.class)
 public class MixinBlockEntityRenderDispatcher {
-    @Inject(method = "tryRender",
+    @Inject(method =
+            #if MC > MC_21_2
+            "setupAndRender",
+            #else
+            "tryRender",
+            #endif
             at = @At(value = "HEAD"))
-    private static void etf$grabContext(BlockEntity blockEntity, Runnable runnable, CallbackInfo ci) {
+    private static <T extends BlockEntity> void etf$grabContext(
+            #if MC > MC_21_2
+            final BlockEntityRenderer<T> blockEntityRenderer, final T blockEntity, final float f, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final CallbackInfo ci
+            #else
+            BlockEntity blockEntity, Runnable runnable, CallbackInfo ci
+            #endif
+
+    ) {
         ETFRenderContext.setCurrentEntity((ETFEntity) blockEntity);
 
     }
 
-    @Inject(method = "tryRender",
+    @Inject(method =
+            #if MC > MC_21_2
+            "setupAndRender",
+            #else
+            "tryRender",
+            #endif
             at = @At(value = "RETURN"))
-    private static void etf$clearContext(BlockEntity blockEntity, Runnable runnable, CallbackInfo ci) {
+    private static void etf$clearContext(CallbackInfo ci) {
         ETFRenderContext.reset();
     }
 

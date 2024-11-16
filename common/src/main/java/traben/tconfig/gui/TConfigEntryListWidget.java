@@ -36,10 +36,21 @@ public class TConfigEntryListWidget extends AbstractSelectionList<TConfigEntryLi
         return Math.min(width - 14, super.getRowWidth());
     }
 
+
+    #if MC > MC_21_2
+    @Override
+    protected int scrollBarX() {
+        return getX() == 0 ? super.scrollBarX() : getX() + getRowWidth() + 4;
+    }
+    #else
     @Override
     protected int getScrollbarPosition() {
         return getX() == 0 ? super.getScrollbarPosition() : getX() + getRowWidth() + 4;
     }
+    #endif
+
+
+
 
     @Override
 #if MC > MC_20_2
@@ -48,7 +59,14 @@ public class TConfigEntryListWidget extends AbstractSelectionList<TConfigEntryLi
     public void updateNarration(final NarrationElementOutput narrationElementOutput) {}
 #endif
 
-#if MC > MC_20_1
+#if MC > MC_21_2
+
+    @Override
+    protected boolean isValidClickButton(final int i) {
+        return true;
+    }
+
+#elif MC > MC_20_1
     @Override
     protected boolean isValidMouseClick(final int button) {
         return true;

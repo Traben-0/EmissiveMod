@@ -1,0 +1,47 @@
+accessWidener   v2  named
+
+accessible method net/minecraft/client/renderer/texture/TextureAtlasSprite <init> (Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/renderer/texture/SpriteContents;IIII)V
+
+accessible class net/minecraft/client/resources/SkinManager$TextureCache
+accessible field net/minecraft/client/resources/SkinManager skinTextures Lnet/minecraft/client/resources/SkinManager$TextureCache;
+
+# for reading texture from RenderLayer
+accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
+accessible class net/minecraft/client/renderer/RenderType$CompositeState
+accessible class net/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard
+accessible field net/minecraft/client/renderer/RenderType$CompositeRenderType state Lnet/minecraft/client/renderer/RenderType$CompositeState;
+accessible field net/minecraft/client/renderer/RenderType$CompositeState textureState Lnet/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard;
+accessible method net/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard cutoutTexture ()Ljava/util/Optional;
+
+# for sprites reading from VertexConsumer
+accessible field net/minecraft/client/renderer/SpriteCoordinateExpander sprite Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;
+
+# for alternative texture modification
+#accessible class net/minecraft/client/render/RenderPhase$Texture
+
+# for block entity renderers in config
+accessible field net/minecraft/client/renderer/blockentity/BlockEntityRenderers PROVIDERS Ljava/util/Map;
+
+accessible field net/minecraft/world/entity/animal/horse/AbstractHorse playerJumpPendingScale F
+
+#accessible field net/minecraft/client/gui/widget/EntryListWidget MENU_LIST_BACKGROUND_TEXTURE Lnet/minecraft/util/Identifier;
+#accessible field net/minecraft/client/gui/widget/EntryListWidget INWORLD_MENU_LIST_BACKGROUND_TEXTURE Lnet/minecraft/util/Identifier;
+
+accessible method net/minecraft/client/renderer/texture/SkinTextureDownloader processLegacySkin (Lcom/mojang/blaze3d/platform/NativeImage;Ljava/lang/String;)Lcom/mojang/blaze3d/platform/NativeImage;
+accessible method net/minecraft/client/renderer/texture/SkinTextureDownloader downloadSkin (Ljava/nio/file/Path;Ljava/lang/String;)Lcom/mojang/blaze3d/platform/NativeImage;
+accessible field net/minecraft/client/resources/SkinManager$TextureCache root Ljava/nio/file/Path;
+
+accessible class com/mojang/blaze3d/vertex/VertexMultiConsumer$Double
+accessible class com/mojang/blaze3d/vertex/VertexMultiConsumer$Multiple
+
+#1.20.2 and earlier height setting
+accessible field net/minecraft/client/gui/components/AbstractWidget height I
+
+accessible field com/mojang/blaze3d/vertex/BufferBuilder building Z
+
+accessible field net/minecraft/client/gui/GuiGraphics bufferSource Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
+accessible class net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey
+accessible field net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey trim Lnet/minecraft/world/item/equipment/trim/ArmorTrim;
+accessible field net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey layerType Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;
+
+accessible method net/minecraft/world/level/biome/Biome getHeightAdjustedTemperature (Lnet/minecraft/core/BlockPos;I)F

@@ -1,5 +1,6 @@
 package traben.entity_texture_features.features.player;
 
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.ETF;
 import traben.entity_texture_features.config.screens.skin.ETFConfigScreenSkinTool;
@@ -8,17 +9,22 @@ import traben.entity_texture_features.features.texture_handlers.ETFTexture;
 import traben.entity_texture_features.utils.ETFUtils2;
 import com.mojang.blaze3d.platform.NativeImage;
 
-import java.io.FileInputStream;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.HttpTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-
+            #if MC > MC_21_2
+import traben.entity_texture_features.ETFException;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.texture.SkinTextureDownloader;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import org.jetbrains.annotations.NotNull;
+import java.io.IOException;
+import java.nio.file.Path;
+            #else
+import net.minecraft.client.renderer.texture.HttpTexture;
+            #endif
 
 @SuppressWarnings("EnhancedSwitchMigration")
 public class ETFPlayerTexture {
@@ -80,6 +86,7 @@ public class ETFPlayerTexture {
             //use the historic skin resource and ensure we do not bother to load a current skin for the player
             try {
 
+                #if MC < MC_21_4
                 HttpTexture skin =
                 #if MC > MC_20_1
                         (HttpTexture) Minecraft.getInstance().getSkinManager().skinTextures.textureManager.getTexture(rendererGivenSkin, null);
@@ -94,6 +101,14 @@ public class ETFPlayerTexture {
                 originalSkin = ETFUtils2.emptyNativeImage(64, 64);
                 originalSkin.copyFrom(vanilla);
                 vanilla.close();
+                #else
+
+                NativeImage vanilla = getSkinOfPlayer(player, rendererGivenSkin);
+
+                originalSkin = ETFUtils2.emptyNativeImage(64, 64);
+                originalSkin.copyFrom(vanilla);
+                vanilla.close();
+                #endif
 
                 //originalSkin = ETFUtils2.getNativeImageElseNull(rendererGivenSkin);
                 checkTexture(true);
@@ -103,6 +118,40 @@ public class ETFPlayerTexture {
             }
         }
     }
+
+    #if MC > MC_21_2
+    //todo 1.21.4 changes likely break other skin changer mods yet again
+    public static @NotNull NativeImage getSkinOfPlayer(final ETFPlayerEntity clientPlayer, @Nullable ResourceLocation rendererGivenSkin) throws IOException {
+        String url;
+        if(clientPlayer instanceof AbstractClientPlayer abstractClientPlayer){
+            url = abstractClientPlayer.getSkin().textureUrl();
+        }else if (clientPlayer instanceof SkullBlockEntity skull){
+            url = Minecraft.getInstance().getSkinManager().getInsecureSkin(skull.getOwnerProfile().gameProfile()).textureUrl();
+        } else{
+            throw new ETFException("Invalid player type to get skin for ETF");
+        }
+
+//        String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
+        String string = rendererGivenSkin != null ? rendererGivenSkin.getPath().substring(6) : null;
+        try {
+            Path path =
+                    string == null
+                            ? Minecraft.getInstance().getSkinManager().skinTextures.
+                            root.resolve("etf_skin_" + clientPlayer.etf$getUuidAsString())
+                            : Minecraft.getInstance().getSkinManager().skinTextures.
+                            root.resolve(string.length() > 2 ? string.substring(0, 2) : "xx").resolve(string);
+            return SkinTextureDownloader.downloadSkin(path, url);
+        } catch (IOException e) {
+            if (rendererGivenSkin != null) {
+                var texture = Minecraft.getInstance().getTextureManager().getTexture(rendererGivenSkin);
+                if(texture instanceof DynamicTexture dynamicTexture){
+                    return Objects.requireNonNull(dynamicTexture.getPixels());
+                }
+            }
+            throw e;
+        }
+    }
+    #endif
 
     //THIS REPRESENTS A NON FEATURED SKIN
     // must still create an object as the identifier is important to detect skin changes from other mods
@@ -647,6 +696,7 @@ public class ETFPlayerTexture {
     public void checkTexture(boolean skipSkinLoad) {
         if (!skipSkinLoad) {
             try {
+                #if MC < MC_21_4
                 HttpTexture skin =
                 #if MC > MC_20_1
                         (HttpTexture) Minecraft.getInstance().getSkinManager().skinTextures.textureManager.getTexture(normalVanillaSkinIdentifier, null);
@@ -655,58 +705,35 @@ public class ETFPlayerTexture {
                 #endif
                 assert skin.file != null;
                 FileInputStream fileInputStream = new FileInputStream(skin.file);
+
+                NativeImage img = NativeImage.read(fileInputStream);
                 remappingETFSkin = true;
-                originalSkin = skin.processLegacySkin(NativeImage.read(fileInputStream));
+                originalSkin = skin.processLegacySkin(img);
                 remappingETFSkin = false;
-                //System.out.println((vanilla != null) +" skin");
                 fileInputStream.close();
-                //originalSkin = //ETFUtils2.emptyNativeImage(64, 64);
-                //originalSkin.copyFrom(vanilla);
+                #else
+
+                NativeImage img = getSkinOfPlayer(player, null);
+                remappingETFSkin = true;
+                originalSkin = SkinTextureDownloader.processLegacySkin(img, "ETF pre test, skin check");
+                remappingETFSkin = false;
+                #endif
+
                 if (Minecraft.getInstance().player != null && player.etf$getUuid().equals(Minecraft.getInstance().player.getUUID())) {
                     clientPlayerOriginalSkinImageForTool = originalSkin;
                 }
-                //vanilla.close();
-                //try cape
-//                try {
-//                    Identifier capeId = ((AbstractClientPlayerEntity) player).getSkinTextures().capeTexture();
-//                    PlayerSkinTexture cape = (PlayerSkinTexture) ((FileCacheAccessor) ((PlayerSkinProviderAccessor) MinecraftClient.getInstance().getSkinProvider()).getCapeCache()).getTextureManager().getOrDefault(capeId, null);
-//                    if (cape != null) {
-//                        FileInputStream fileInputStreamCape = new FileInputStream(((PlayerSkinTextureAccessor) cape).getCacheFile());
-//                        NativeImage vanillaCape = NativeImage.read(fileInputStreamCape);
-//                        //System.out.println((vanilla != null) +" skin");
-//                        fileInputStreamCape.close();
-//                        originalCape = ETFUtils2.emptyNativeImage(64, 32);
-//                        originalCape.copyFrom(vanillaCape);
-//                        vanillaCape.close();
-//                    }
-//                } catch (Exception e) {
-//                    // System.out.println("cape failed no textures loaded");
-//                }
+
             } catch (Exception e) {
-                skinFailed("skin load failure: "+ e.getMessage());
-                // System.out.println("skin failed no textures loaded");
+                skinFailed("skin pre load failure: "+ e.getMessage());
                 return;
             }
         }
-        // System.out.println("endskin");
 
         UUID id = player.etf$getUuid();
-//        NativeImage modifiedCape;
-//        if (originalCape != null) {
-//            modifiedCape = ETFUtils2.emptyNativeImage(originalCape.getWidth(), originalCape.getHeight());
-//            modifiedCape.copyFrom(originalCape);
-//        } else {
-//            modifiedCape = ETFUtils2.emptyNativeImage(64, 32);
-//        }
+
         NativeImage modifiedSkin = ETFUtils2.emptyNativeImage(originalSkin.getWidth(), originalSkin.getHeight());
         modifiedSkin.copyFrom(originalSkin);
 
-//        if (ETFConfig.getInstance().skinFeaturesPrintETFReadySkin && MinecraftClient.getInstance().player != null && id.equals(MinecraftClient.getInstance().player.getUuid())) {
-//            ETFUtils2.logMessage("Skin feature layout is being applied to a copy of your skin please wait...", true);
-//            printPlayerSkinCopyWithFeatureOverlay(originalSkin);
-//            ETFConfig.getInstance().skinFeaturesPrintETFReadySkin = false;
-//            ETFUtils2.saveConfig();
-//        }
         if (originalSkin != null) {
             if (ETFUtils2.getPixel(originalSkin, 1, 16) == -16776961 &&
                     ETFUtils2.getPixel(originalSkin, 0, 16) == -16777089 &&

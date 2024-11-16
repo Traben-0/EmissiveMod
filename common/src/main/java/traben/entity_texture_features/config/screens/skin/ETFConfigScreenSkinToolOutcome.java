@@ -7,7 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.PlayerInfo;
+#if MC > MC_21_2
+import net.minecraft.client.renderer.texture.DynamicTexture;
+#else
 import net.minecraft.client.renderer.texture.HttpTexture;
+#endif
+
 #if MC > MC_20_1
 import net.minecraft.client.resources.PlayerSkin;
 #else
@@ -125,6 +130,14 @@ public class ETFConfigScreenSkinToolOutcome extends ETFScreenOldCompat {
                         if (changeSuccess) {
                             //ETFUtils2.logMessage(ETFVersionDifferenceHandler.getTextFromTranslation("config." + ETFClientCommon.MOD_ID + ".player_skin_editor.upload_skin.success" ).getString(),true);
                             //change internally cached skin
+                            #if MC > MC_21_2
+
+                            var texture = Minecraft.getInstance().getTextureManager().getTexture(Minecraft.getInstance().player.getSkin().texture());
+                            if(texture instanceof DynamicTexture dynamicTexture){
+                                dynamicTexture.setPixels(skin);
+                            }
+
+                            #else
                             HttpTexture skinfile =
                                 #if MC > MC_20_1
                                     (HttpTexture) Minecraft.getInstance().getSkinManager().skinTextures.textureManager.getTexture((Minecraft.getInstance().player).getSkin().texture(), null);
@@ -132,13 +145,14 @@ public class ETFConfigScreenSkinToolOutcome extends ETFScreenOldCompat {
                                     (HttpTexture) Minecraft.getInstance().getSkinManager().textureManager.getTexture(Minecraft.getInstance().player.getSkinTextureLocation(), null);
                                 #endif
                                 try {
-                                //System.out.println("file was ="+((PlayerSkinTextureAccessor)skinfile).getCacheFile().toString());
                                 assert skinfile.file != null;
                                 skin.writeToFile(skinfile.file);
-                            } catch (IOException e) {
+                                } catch (IOException e) {
                                 ETFUtils2.logError(ETF.getTextFromTranslation("config." + ETF.MOD_ID + ".player_skin_editor.upload_skin.success_local_fail").getString(), true);
                                 //System.out.println("failed to change internal skin");
                             }
+                            #endif
+
                             //clear etf data of skin
                             if (Minecraft.getInstance().player != null) {
                                 ETFManager.getInstance().PLAYER_TEXTURE_MAP.removeEntryOnly(Minecraft.getInstance().player.getUUID());
