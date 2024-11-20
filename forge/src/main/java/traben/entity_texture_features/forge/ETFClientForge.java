@@ -32,9 +32,6 @@ public class ETFClientForge {
 
             ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true));
             ETF.start();
-        } else {
-
-            throw new UnsupportedOperationException("Attempting to load a clientside only mod on the server, refusing");
         }
     }
 
