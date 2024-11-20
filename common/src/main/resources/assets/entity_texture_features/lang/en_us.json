@@ -8,6 +8,8 @@
   "config.entity_features.empty_emf": "No settings available\nThe Entity Model Features mod is needed if you want OptiFine format Custom Entity Models.",
   "config.entity_features.empty_esf": "No settings available\nThe Entity Sound Features mod is needed if you want Varied Entity Sounds.",
   "config.entity_features.general_settings.title": "Misc settings",
+  "config.entity_texture_features.optifine.prevent_base.title": "Prevent base texture overrides",
+  "config.entity_texture_features.optifine.prevent_base.tooltip": "This setting will prevent ETF from loading overrides for the 'base' texture if present in the optifine/etf directories\nE.G. optifine/random/entity/chicken.png will not act as an override to the vanilla texture.\nON is the default OptiFine behaviour.",
   "config.entity_texture_features.optifine.desc": "These options are for backwards compatibility with OptiFine.\nSome will put limitations on certain features because OptiFine does.\nSome will enable some odd behaviours because OptiFine does.",
   "config.entity_texture_features.optifine.variant_gap.title": "Limit rule number gaps",
   "config.entity_texture_features.optifine.variant_gap.tooltip": "OptiFine limits random .properties file rule numbers such that in\nsequential order the rule numbers do not exceed a gap of 9.\nThis setting enforces this limit in ETF if enabled, for OptiFine compatibility.",

@@ -1,5 +1,6 @@
 package traben.entity_texture_features.mixin.mods.skin_layers;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.tr7zw.skinlayers.render.CustomizableModelPart;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import traben.entity_texture_features.ETF;
 import traben.entity_texture_features.mixin.MixinModelPart;
@@ -46,6 +48,21 @@ public abstract class MixinCustomizableModelPart {
             ETFRenderContext.incrementCurrentModelPartDepth();
         }
     }
+
+#if MC >= MC_21
+    @ModifyVariable(method = "render(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V",
+            at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private VertexConsumer etf$modify(final VertexConsumer value) {
+        if (value instanceof BufferBuilder builder && !builder.building){
+            if (value instanceof ETFVertexConsumer etf
+                    && etf.etf$getRenderLayer() != null
+                    && etf.etf$getProvider() != null){
+                return etf.etf$getProvider().getBuffer(etf.etf$getRenderLayer());
+            }
+        }
+        return value;
+    }
+#endif
 
     @Inject(method =
             #if MC > MC_20_4

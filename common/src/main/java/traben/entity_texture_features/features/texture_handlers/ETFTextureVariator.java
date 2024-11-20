@@ -134,8 +134,8 @@ public abstract class ETFTextureVariator {
                     }
                 });
             }
-            ResourceLocation directorized = ETFDirectory.getDirectoryVersionOf(vanillaIdentifier);
-
+            ResourceLocation directorized = ETF.config().getConfig().optifine_preventBaseTextureInOptifineDirectory
+                    ? null : ETFDirectory.getDirectoryVersionOf(vanillaIdentifier);
             ETFTexture vanilla = ETFManager.getInstance().getETFTextureNoVariation(directorized == null ? vanillaIdentifier : directorized);
 
             variantMap.put(1, vanilla);

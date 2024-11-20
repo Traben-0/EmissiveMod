@@ -1,5 +1,10 @@
 [**ETF Changelog:**]
 
+
+[6.2.8]
+- fixed a crash in the inventory screen with 3d skin layers latest update with player skin features active
+- added an OptiFine compat option to prevent loading a non-variant / base texture present in the variant directories (e.g. optifine/random/entity/chicken.png won't be loaded as an override to the vanilla base texture, as this does not happen in OptiFine), enabled by default.
+
 [6.2.7]
 - fixed log spam in 1.21.3 due to errors with the shoulder parrot feature renderer
 - updated for forge 1.21.3

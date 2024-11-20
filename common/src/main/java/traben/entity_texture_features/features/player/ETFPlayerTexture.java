@@ -9,6 +9,7 @@ import traben.entity_texture_features.features.texture_handlers.ETFTexture;
 import traben.entity_texture_features.utils.ETFUtils2;
 import com.mojang.blaze3d.platform.NativeImage;
 
+import java.io.FileInputStream;
 import java.util.*;
 
 import net.minecraft.client.Minecraft;

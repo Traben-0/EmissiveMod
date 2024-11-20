@@ -42,12 +42,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.EquipmentModel;
 #else
 import net.minecraft.client.resources.model.EquipmentClientInfo;
-
-#endif
-#endif
-
-
 import net.minecraft.world.item.equipment.EquipmentAsset;
+#endif
+#endif
+
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

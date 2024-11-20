@@ -40,6 +40,7 @@ public final class ETFConfig extends TConfig {
 
     public boolean optifine_limitRandomVariantGapsBy10 = true;
     public boolean optifine_allowWeirdSkipsInTrueRandom = true;
+    public boolean optifine_preventBaseTextureInOptifineDirectory = true;
 
     public IllegalPathMode illegalPathSupportMode = IllegalPathMode.None;
     public boolean enableCustomTextures = true;
@@ -256,7 +257,9 @@ public final class ETFConfig extends TConfig {
                         new TConfigEntryBoolean("config.entity_texture_features.optifine.variant_gap.title", "config.entity_texture_features.optifine.variant_gap.tooltip",
                                 () -> optifine_limitRandomVariantGapsBy10, aBoolean -> optifine_limitRandomVariantGapsBy10 = aBoolean, true),
                         new TConfigEntryBoolean("config.entity_texture_features.optifine.random_skips.title", "config.entity_texture_features.optifine.random_skips.tooltip",
-                                () -> optifine_allowWeirdSkipsInTrueRandom, aBoolean -> optifine_allowWeirdSkipsInTrueRandom = aBoolean, true)
+                                () -> optifine_allowWeirdSkipsInTrueRandom, aBoolean -> optifine_allowWeirdSkipsInTrueRandom = aBoolean, true),
+                        new TConfigEntryBoolean("config.entity_texture_features.optifine.prevent_base.title", "config.entity_texture_features.optifine.prevent_base.tooltip",
+                                () -> optifine_preventBaseTextureInOptifineDirectory, aBoolean -> optifine_preventBaseTextureInOptifineDirectory = aBoolean, true)
                 )
         );
     }
