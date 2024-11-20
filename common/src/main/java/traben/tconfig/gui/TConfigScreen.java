@@ -58,6 +58,10 @@ public class TConfigScreen extends Screen {
 
     @Override
     public void render(final GuiGraphics context, final int mouseX, final int mouseY, final float delta) {
+    #if MC == MC_20_1
+        this.renderBackground(context);
+    #endif
+
         super.render(context, mouseX, mouseY, delta);
         context.drawCenteredString(font, title, width / 2, 15, 0xFFFFFF);
 
