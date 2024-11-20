@@ -47,8 +47,6 @@ public class ETFClientNeoForge {
             }
             ETF.start();
 
-        } else {
-            throw new UnsupportedOperationException("Attempting to load a clientside only mod on the server, refusing");
         }
     }
     #if MC >= MC_21
