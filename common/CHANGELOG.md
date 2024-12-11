@@ -1,5 +1,11 @@
 [**ETF Changelog:**]
 
+[6.2.9]
+- updated to 1.21.4 for Forge & NeoForge
+- fixed a crash when the ETF config object was loaded far too early by another mod
+- fixed Illusioner entity copy illusions not all varying their textures
+- fixed the resource-pack screen config button not resizing when the screen size is modified in 1.20.6+
+
 
 [6.2.8]
 - fixed a crash in the inventory screen with 3d skin layers latest update with player skin features active

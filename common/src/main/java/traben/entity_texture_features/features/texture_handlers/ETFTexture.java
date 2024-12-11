@@ -345,6 +345,7 @@ public class ETFTexture {
 
     private Optional<Resource> getResourceOrModifyForTrims(final ResourceManager resourceManager) {
         Optional<Resource> vanillaR1 = resourceManager.getResource(thisIdentifier);
+
         if (vanillaR1.isEmpty() &&
                 (thisIdentifier.getPath().contains("textures/trims/models/armor/")//prior to 1.21.2
                         || thisIdentifier.getPath().contains("textures/trims/entity/")//1.21.2

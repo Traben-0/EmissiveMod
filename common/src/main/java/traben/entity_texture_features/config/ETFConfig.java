@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -390,10 +389,8 @@ public final class ETFConfig extends TConfig {
 
         @Override
         public String toString() {
-            return switch (this) {
-                case TRUE -> CommonComponents.OPTION_ON.getString();
-                case FALSE -> CommonComponents.OPTION_OFF.getString();
-            };
+            if (this == TRUE) return "ON";
+            return "OFF";
         }
     }
 
