@@ -1,13 +1,17 @@
 package traben.entity_texture_features.config.screens.skin;
 
 
+import com.google.common.hash.Hashing;
+import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.FileUtil;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.PlayerInfo;
 #if MC > MC_21_2
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 #else
 import net.minecraft.client.renderer.texture.HttpTexture;
@@ -20,6 +24,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 #endif
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -27,6 +32,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import traben.entity_texture_features.ETF;
+import traben.entity_texture_features.ETFException;
 import traben.entity_texture_features.ETFVersionDifferenceManager;
 import traben.entity_texture_features.features.ETFManager;
 import traben.entity_texture_features.utils.ETFUtils2;
@@ -34,6 +40,9 @@ import traben.entity_texture_features.utils.ETFUtils2;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +63,6 @@ public class ETFConfigScreenSkinToolOutcome extends ETFScreenOldCompat {
     }
 
     //upload code sourced from by https://github.com/cobrasrock/Skin-Swapper/blob/1.18-fabric/src/main/java/net/cobrasrock/skinswapper/changeskin/SkinChange.java
-    //I do not intend to allow uploading of just any skin file, only ETF skin feature changes to an already existing skin, so I will not encroach on the scope of the excellent skin swapper mod
     public static boolean uploadSkin(boolean skinType) {
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             if ("127.0.0.1".equals(InetAddress.getLocalHost().getHostAddress())) {
@@ -110,8 +118,9 @@ public class ETFConfigScreenSkinToolOutcome extends ETFScreenOldCompat {
             this.addRenderableWidget(getETFButton((int) (this.width * 0.15), (int) (this.height * 0.4), (int) (this.width * 0.7), 20,
                     ETF.getTextFromTranslation("config." + ETF.MOD_ID + ".player_skin_editor.upload_skin"),
                     (button) -> {
+                        if (Minecraft.getInstance().player == null) return;
                         boolean skinType = true;//true for steve false for alex
-                        if (Minecraft.getInstance().player != null && Minecraft.getInstance().getConnection() != null) {
+                        if (Minecraft.getInstance().getConnection() != null) {
                             PlayerInfo playerListEntry = Minecraft.getInstance().getConnection().getPlayerInfo(Minecraft.getInstance().player.getUUID());
                             if (playerListEntry != null) {
                                 #if MC > MC_20_1
@@ -131,7 +140,28 @@ public class ETFConfigScreenSkinToolOutcome extends ETFScreenOldCompat {
                             //ETFUtils2.logMessage(ETFVersionDifferenceHandler.getTextFromTranslation("config." + ETFClientCommon.MOD_ID + ".player_skin_editor.upload_skin.success" ).getString(),true);
                             //change internally cached skin
                             #if MC > MC_21_2
+                            try {
+                                GameProfile gameProfile = Minecraft.getInstance().player.getGameProfile();
 
+                                var minecraftProfileTexture = Minecraft.getInstance().getSkinManager().sessionService.getTextures(gameProfile).skin();
+                                if (minecraftProfileTexture == null)
+                                    throw new ETFException("No profile texture found for player: " + gameProfile.getName());
+
+                                String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
+
+                                Path path = Minecraft.getInstance().getSkinManager().skinTextures.
+                                        root.resolve(string.length() > 2 ? string.substring(0, 2) : "xx").resolve(string);
+                                if (Files.isRegularFile(path)){
+                                    FileUtil.createDirectoriesSafe(path.getParent());
+                                    skin.writeToFile(path);
+                                }
+
+                            }catch (Exception e){
+                                ETFUtils2.logError("Failed to change in-game skin correctly, you might need to restart to see all the uploaded changes in-game", true);
+                                ETFUtils2.logError("cause: " + e.getMessage(), false);
+                            }
+
+                            //update the registered texture
                             var texture = Minecraft.getInstance().getTextureManager().getTexture(Minecraft.getInstance().player.getSkin().texture());
                             if(texture instanceof DynamicTexture dynamicTexture){
                                 dynamicTexture.setPixels(skin);
@@ -157,6 +187,8 @@ public class ETFConfigScreenSkinToolOutcome extends ETFScreenOldCompat {
                             if (Minecraft.getInstance().player != null) {
                                 ETFManager.getInstance().PLAYER_TEXTURE_MAP.removeEntryOnly(Minecraft.getInstance().player.getUUID());
                             }
+                        }else {
+                            ETFUtils2.logError("Failed to change in-game skin correctly, you might need to restart to see all the uploaded changes in-game", true);
                         }
                         button.active = false;
                     }));

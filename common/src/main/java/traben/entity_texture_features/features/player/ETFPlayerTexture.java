@@ -1,5 +1,8 @@
 package traben.entity_texture_features.features.player;
 
+import com.google.common.hash.Hashing;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.jetbrains.annotations.Nullable;
 import traben.entity_texture_features.ETF;
@@ -10,6 +13,7 @@ import traben.entity_texture_features.utils.ETFUtils2;
 import com.mojang.blaze3d.platform.NativeImage;
 
 import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.util.*;
 
 import net.minecraft.client.Minecraft;
@@ -121,26 +125,31 @@ public class ETFPlayerTexture {
     }
 
     #if MC > MC_21_2
-    //todo 1.21.4 changes likely break other skin changer mods yet again
+    //mostly a copy of new skin downloading code, except we want to grab the nativeImage of the skin itself without any edits
     public static @NotNull NativeImage getSkinOfPlayer(final ETFPlayerEntity clientPlayer, @Nullable ResourceLocation rendererGivenSkin) throws IOException {
+        //todo renderer given skin will need to be reconsidered how to use in 1.21.4+
+
         String url;
+        GameProfile gameProfile;
         if(clientPlayer instanceof AbstractClientPlayer abstractClientPlayer){
             url = abstractClientPlayer.getSkin().textureUrl();
-        }else if (clientPlayer instanceof SkullBlockEntity skull){
-            url = Minecraft.getInstance().getSkinManager().getInsecureSkin(skull.getOwnerProfile().gameProfile()).textureUrl();
-        } else{
-            throw new ETFException("Invalid player type to get skin for ETF");
+            gameProfile = abstractClientPlayer.getGameProfile();
+        }else if (clientPlayer instanceof SkullBlockEntity skull && skull.getOwnerProfile() != null) {
+            gameProfile = skull.getOwnerProfile().gameProfile();
+            url = Minecraft.getInstance().getSkinManager().getInsecureSkin(gameProfile).textureUrl();
+        } else {
+            throw new ETFException("Invalid player type to get skin for ETF: " + clientPlayer.getClass());
         }
 
-//        String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
-        String string = rendererGivenSkin != null ? rendererGivenSkin.getPath().substring(6) : null;
+        var minecraftProfileTexture = Minecraft.getInstance().getSkinManager().sessionService.getTextures(gameProfile).skin();
+        if (minecraftProfileTexture == null) throw new ETFException("No profile texture found for player: " + gameProfile.getName());
+
+        String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
+
         try {
-            Path path =
-                    string == null
-                            ? Minecraft.getInstance().getSkinManager().skinTextures.
-                            root.resolve("etf_skin_" + clientPlayer.etf$getUuidAsString())
-                            : Minecraft.getInstance().getSkinManager().skinTextures.
-                            root.resolve(string.length() > 2 ? string.substring(0, 2) : "xx").resolve(string);
+            Path path = Minecraft.getInstance().getSkinManager().skinTextures.
+                        root.resolve(string.length() > 2 ? string.substring(0, 2) : "xx").resolve(string);
+
             return SkinTextureDownloader.downloadSkin(path, url);
         } catch (IOException e) {
             if (rendererGivenSkin != null) {

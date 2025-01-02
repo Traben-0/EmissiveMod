@@ -45,3 +45,5 @@ accessible field net/minecraft/client/renderer/entity/layers/EquipmentLayerRende
 accessible field net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey layerType Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;
 
 accessible method net/minecraft/world/level/biome/Biome getHeightAdjustedTemperature (Lnet/minecraft/core/BlockPos;I)F
+
+accessible field net/minecraft/client/resources/SkinManager sessionService Lcom/mojang/authlib/minecraft/MinecraftSessionService;
